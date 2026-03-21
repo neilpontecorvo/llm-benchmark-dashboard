@@ -1,0 +1,74 @@
+/* Ocean Blue — LLM Benchmark Dashboard */
+:root {
+  --font-family-base:        "Inter", system-ui, -apple-system, sans-serif;
+  --font-family-mono:        "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-family-heading:     var(--font-family-base);
+
+  --page-bg:                 #eff6ff;
+  --page-text:               #1e3a5f;
+  --page-text-muted:         #3b82f6;
+  --page-text-faint:         #93c5fd;
+
+  --card-bg:                 #ffffff;
+  --card-border:             #bfdbfe;
+  --card-shadow:             0 10px 30px rgba(37, 99, 235, 0.08);
+  --card-radius:             1rem;
+
+  --btn-primary-bg:          #2563eb;
+  --btn-primary-text:        #ffffff;
+  --btn-secondary-bg:        #ffffff;
+  --btn-secondary-text:      #1e3a5f;
+  --btn-secondary-border:    #bfdbfe;
+  --btn-radius:              0.75rem;
+
+  --link-color:              #1d4ed8;
+
+  --table-header-text:       #3b82f6;
+  --table-header-border:     #bfdbfe;
+  --table-row-border:        #eff6ff;
+  --table-top3-bg:           rgba(239, 246, 255, 0.6);
+  --table-rank-text:         #93c5fd;
+  --table-model-text:        var(--page-text);
+  --table-provider-text:     #2563eb;
+
+  --scorebar-track:          #dbeafe;
+  --scorebar-height:         0.625rem;
+  --heat-0-from:             #6366f1;
+  --heat-0-to:               #3b82f6;
+  --heat-20-from:            #3b82f6;
+  --heat-20-to:              #06b6d4;
+  --heat-40-from:            #06b6d4;
+  --heat-40-to:              #10b981;
+  --heat-60-from:            #10b981;
+  --heat-60-to:              #f59e0b;
+  --heat-80-from:            #f59e0b;
+  --heat-80-to:              #ef4444;
+
+  --rank1-bg:                #fef3c7;
+  --rank1-text:              #92400e;
+  --rank1-border:            #fcd34d;
+  --rank2-bg:                #eff6ff;
+  --rank2-text:              #1e40af;
+  --rank2-border:            #93c5fd;
+  --rank3-bg:                #fff7ed;
+  --rank3-text:              #c2410c;
+  --rank3-border:            #fdba74;
+
+  --cat-general-bg:          #dbeafe;   --cat-general-text:          #1d4ed8;   --cat-general-border:        #93c5fd;
+  --cat-coding-bg:           #ede9fe;   --cat-coding-text:           #6d28d9;   --cat-coding-border:         #c4b5fd;
+  --cat-agentic-bg:          #d1fae5;   --cat-agentic-text:          #047857;   --cat-agentic-border:        #6ee7b7;
+  --cat-open-only-bg:        #ffedd5;   --cat-open-only-text:        #c2410c;   --cat-open-only-border:      #fdba74;
+  --cat-community-bg:        #fce7f3;   --cat-community-text:        #be185d;   --cat-community-border:      #f9a8d4;
+  --cat-text-to-image-bg:    #fae8ff;   --cat-text-to-image-text:    #a21caf;   --cat-text-to-image-border:  #e879f9;
+  --cat-text-to-video-bg:    #ffe4e6;   --cat-text-to-video-text:    #be123c;   --cat-text-to-video-border:  #fda4af;
+  --cat-image-to-video-bg:   #fef3c7;   --cat-image-to-video-text:   #b45309;   --cat-image-to-video-border: #fcd34d;
+  --cat-reasoning-bg:        #cffafe;   --cat-reasoning-text:        #0e7490;   --cat-reasoning-border:      #67e8f9;
+  --cat-multilingual-bg:     #ccfbf1;   --cat-multilingual-text:     #0f766e;   --cat-multilingual-border:   #5eead4;
+
+  --banner-success-bg:       #f0fdf4;   --banner-success-text:       #166534;   --banner-success-border:     #bbf7d0;
+  --banner-warning-bg:       #fffbeb;   --banner-warning-text:       #92400e;   --banner-warning-border:     #fde68a;
+  --banner-error-bg:         #fef2f2;   --banner-error-text:         #991b1b;   --banner-error-border:       #fecaca;
+
+  --badge-live-bg:           #dcfce7;   --badge-live-text:           #15803d;   --badge-live-dot:            #22c55e;
+  --badge-mock-bg:           #eff6ff;   --badge-mock-text:           #3b82f6;   --badge-mock-dot:            #93c5fd;
+}

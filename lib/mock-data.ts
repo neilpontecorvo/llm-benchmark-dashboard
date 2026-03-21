@@ -1,23 +1,21 @@
 import { BenchmarkAdapter, BenchmarkCategory, BenchmarkKey, BenchmarkResult } from "@/lib/types";
+import { BENCHMARK_CATEGORIES } from "@/lib/weights";
 
 const MODELS = [
-  ["OpenAI GPT-5", "OpenAI"],
-  ["Anthropic Claude 4.5", "Anthropic"],
-  ["Google Gemini 2.5 Pro", "Google"],
-  ["xAI Grok 3", "xAI"],
-  ["Meta Llama 4 Maverick", "Meta"],
+  ["GPT-5.4 High", "OpenAI"],
+  ["Claude Opus 4.6 Thinking", "Anthropic"],
+  ["Gemini 3 Pro", "Google DeepMind"],
+  ["Grok 3.5", "xAI"],
+  ["Llama 4 Maverick 405B", "Meta"],
   ["DeepSeek V3.1", "DeepSeek"],
-  ["Mistral Large 2", "Mistral"],
-  ["Qwen 3 Max", "Alibaba"],
-  ["Cohere Command R+", "Cohere"],
-  ["OpenAI o4", "OpenAI"]
+  ["Mistral Large 3", "Mistral"],
+  ["Qwen 3 Max 235B", "Alibaba"],
+  ["Cohere Command R+ 08-2025", "Cohere"],
+  ["o4-mini High", "OpenAI"]
 ] as const;
 
 function categoryFor(key: BenchmarkKey): BenchmarkCategory {
-  if (key === "swe_bench_verified" || key === "aider_polyglot") return "coding";
-  if (key === "arena_text") return "community_preference";
-  if (key === "hf_open_llm") return "open_only";
-  return "general";
+  return BENCHMARK_CATEGORIES[key] ?? "general";
 }
 
 export function mockResultsForBenchmark(adapter: Pick<BenchmarkAdapter, "key" | "sourceUrl" | "includedInOverall">, limit = 10): BenchmarkResult[] {

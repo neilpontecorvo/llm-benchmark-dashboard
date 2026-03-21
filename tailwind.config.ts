@@ -8,25 +8,27 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-family-base)"],
+        mono: ["var(--font-family-mono)"],
+        heading: ["var(--font-family-heading)"],
+      },
       colors: {
-        border: "hsl(220 13% 91%)",
-        input: "hsl(220 13% 91%)",
-        ring: "hsl(222 84% 5%)",
-        background: "hsl(0 0% 100%)",
-        foreground: "hsl(222 47% 11%)",
-        muted: "hsl(210 40% 96%)",
-        mutedForeground: "hsl(215 16% 47%)",
-        card: "hsl(0 0% 100%)",
-        cardForeground: "hsl(222 47% 11%)",
-        primary: "hsl(221 83% 53%)",
-        primaryForeground: "hsl(210 40% 98%)"
+        border: "var(--card-border)",
+        input: "var(--card-border)",
+        ring: "var(--btn-primary-bg)",
+        background: "var(--page-bg)",
+        foreground: "var(--page-text)",
+        muted: "var(--page-text-muted)",
+        card: "var(--card-bg)",
+        primary: "var(--btn-primary-bg)",
       },
       borderRadius: {
         xl: "1rem",
-        "2xl": "1.25rem"
+        "2xl": "var(--card-radius)"
       },
       boxShadow: {
-        soft: "0 10px 30px rgba(15, 23, 42, 0.08)"
+        soft: "var(--card-shadow)"
       }
     }
   },

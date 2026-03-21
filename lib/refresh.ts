@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { adapters } from "@/lib/adapters";
 import { buildOverallTop3 } from "@/lib/scoring/overall-rank";
-import { BenchmarkKey, BenchmarkResult, RefreshRunResponse } from "@/lib/types";
+import { BenchmarkCategory, BenchmarkKey, BenchmarkResult, DataSource, RefreshRunResponse, RefreshStatus } from "@/lib/types";
 
 export async function runRefresh(limit = 10): Promise<RefreshRunResponse> {
   const startedAt = new Date().toISOString();
@@ -40,7 +40,8 @@ export async function runRefresh(limit = 10): Promise<RefreshRunResponse> {
     await prisma.benchmarkResult.createMany({
       data: allResults.map((r) => ({
         ...r,
-        fetchedAt: new Date(r.fetchedAt)
+        fetchedAt: new Date(r.fetchedAt),
+        dataSource: r.dataSource ?? "mock"
       }))
     });
   }
@@ -73,34 +74,79 @@ export async function runRefresh(limit = 10): Promise<RefreshRunResponse> {
   return { status, startedAt, completedAt, benchmarks: statuses };
 }
 
+const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export async function getDashboardData() {
   const results = await prisma.benchmarkResult.findMany({ orderBy: [{ benchmarkKey: "asc" }, { rank: "asc" }] });
   const overall = await prisma.overallResult.findMany({ orderBy: { overallRank: "asc" } });
   const refresh = await prisma.refreshRun.findFirst({ orderBy: { completedAt: "desc" } });
 
-  const benchmarks = {
-    artificial_analysis: [] as BenchmarkResult[],
-    arena_text: [] as BenchmarkResult[],
-    swe_bench_verified: [] as BenchmarkResult[],
-    aider_polyglot: [] as BenchmarkResult[],
-    livebench: [] as BenchmarkResult[],
-    hf_open_llm: [] as BenchmarkResult[]
+  const benchmarks: Record<BenchmarkKey, BenchmarkResult[]> = {
+    artificial_analysis: [],
+    arena_text: [],
+    swe_bench_verified: [],
+    aider_polyglot: [],
+    livebench: [],
+    hf_open_llm: [],
+    arena_text_to_image: [],
+    arena_text_to_video: [],
+    arena_image_to_video: [],
+    gpqa_diamond: [],
+    humanitys_last_exam: [],
+    mmmlu: []
   };
 
   for (const item of results) {
     benchmarks[item.benchmarkKey as BenchmarkKey].push({
-      ...item,
-      fetchedAt: item.fetchedAt.toISOString()
+      id: item.id,
+      benchmarkKey: item.benchmarkKey as BenchmarkKey,
+      fetchedAt: item.fetchedAt.toISOString(),
+      modelName: item.modelName,
+      provider: item.provider ?? undefined,
+      rank: item.rank,
+      rawScore: item.rawScore,
+      rawScoreText: item.rawScoreText,
+      normalizedScore: item.normalizedScore,
+      confidenceText: item.confidenceText,
+      category: item.category as BenchmarkCategory,
+      sourceUrl: item.sourceUrl,
+      includedInOverall: item.includedInOverall,
+      dataSource: (item.dataSource as DataSource) ?? "mock"
     });
   }
 
+  const lastRefreshedAt = refresh?.completedAt?.toISOString() ?? null;
+  const isStale = lastRefreshedAt
+    ? Date.now() - new Date(lastRefreshedAt).getTime() > STALE_THRESHOLD_MS
+    : true;
+
+  const succeeded = (refresh?.benchmarksSucceeded as BenchmarkKey[] | null) ?? [];
+  const attempted = (refresh?.benchmarksAttempted as BenchmarkKey[] | null) ?? [];
+
+  const refreshStatus: RefreshStatus = {
+    status: (refresh?.status as RefreshStatus["status"]) ?? null,
+    lastRefreshedAt,
+    isStale,
+    benchmarkStatuses: attempted.map((key) => ({
+      key,
+      succeeded: succeeded.includes(key)
+    })),
+    errorSummary: refresh?.errorSummary ?? null
+  };
+
   return {
-    lastRefreshedAt: refresh?.completedAt?.toISOString() ?? null,
+    lastRefreshedAt,
+    refreshStatus,
     benchmarks,
     overallTop3: overall.map((r) => ({
-      ...r,
+      id: r.id,
       fetchedAt: r.fetchedAt.toISOString(),
-      includedBenchmarks: r.includedBenchmarks as BenchmarkKey[]
+      modelName: r.modelName,
+      provider: r.provider ?? undefined,
+      includedBenchmarks: r.includedBenchmarks as BenchmarkKey[],
+      weightedScore: r.weightedScore,
+      appearanceCount: r.appearanceCount,
+      overallRank: r.overallRank
     }))
   };
 }

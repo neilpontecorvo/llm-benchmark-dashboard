@@ -1,19 +1,99 @@
-import { OverallResult } from "@/lib/types";
+import { BenchmarkCategory, BenchmarkKey, OverallResult } from "@/lib/types";
+import { BENCHMARK_CATEGORIES } from "@/lib/weights";
+
+const STRENGTH_LABELS: Record<BenchmarkKey, string> = {
+  artificial_analysis: "Intelligence Index",
+  arena_text: "Community Preferred",
+  swe_bench_verified: "Real-World Coding",
+  aider_polyglot: "Polyglot Coding",
+  livebench: "Live Evaluation",
+  hf_open_llm: "Open-Weight",
+  arena_text_to_image: "Image Generation",
+  arena_text_to_video: "Video from Text",
+  arena_image_to_video: "Video from Image",
+  gpqa_diamond: "Expert Reasoning",
+  humanitys_last_exam: "Frontier Knowledge",
+  mmmlu: "Multilingual",
+};
+
+interface ThemeStyle { bg: string; text: string; border: string }
+
+const CATEGORY_STYLES: Record<BenchmarkCategory, ThemeStyle> = {
+  general:              { bg: "var(--cat-general-bg)",        text: "var(--cat-general-text)",        border: "var(--cat-general-border)" },
+  coding:               { bg: "var(--cat-coding-bg)",         text: "var(--cat-coding-text)",         border: "var(--cat-coding-border)" },
+  agentic:              { bg: "var(--cat-agentic-bg)",        text: "var(--cat-agentic-text)",        border: "var(--cat-agentic-border)" },
+  open_only:            { bg: "var(--cat-open-only-bg)",      text: "var(--cat-open-only-text)",      border: "var(--cat-open-only-border)" },
+  community_preference: { bg: "var(--cat-community-bg)",      text: "var(--cat-community-text)",      border: "var(--cat-community-border)" },
+  text_to_image:        { bg: "var(--cat-text-to-image-bg)",  text: "var(--cat-text-to-image-text)",  border: "var(--cat-text-to-image-border)" },
+  text_to_video:        { bg: "var(--cat-text-to-video-bg)",  text: "var(--cat-text-to-video-text)",  border: "var(--cat-text-to-video-border)" },
+  image_to_video:       { bg: "var(--cat-image-to-video-bg)", text: "var(--cat-image-to-video-text)", border: "var(--cat-image-to-video-border)" },
+  reasoning:            { bg: "var(--cat-reasoning-bg)",      text: "var(--cat-reasoning-text)",      border: "var(--cat-reasoning-border)" },
+  multilingual:         { bg: "var(--cat-multilingual-bg)",   text: "var(--cat-multilingual-text)",   border: "var(--cat-multilingual-border)" },
+};
+
+const RANK_STYLES: ThemeStyle[] = [
+  { bg: "var(--rank1-bg)", text: "var(--rank1-text)", border: "var(--rank1-border)" },
+  { bg: "var(--rank2-bg)", text: "var(--rank2-text)", border: "var(--rank2-border)" },
+  { bg: "var(--rank3-bg)", text: "var(--rank3-text)", border: "var(--rank3-border)" },
+];
+
+const DEFAULT_RANK: ThemeStyle = { bg: "var(--card-bg)", text: "var(--page-text)", border: "var(--card-border)" };
 
 export function OverallTop3({ data }: { data: OverallResult[] }) {
   return (
-    <section className="card mb-6 p-6">
-      <h2 className="text-lg font-semibold">Overall Top 3</h2>
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        {data.map((item) => (
-          <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="text-sm text-slate-500">Rank #{item.overallRank}</div>
-            <div className="mt-1 text-lg font-semibold">{item.modelName}</div>
-            <div className="text-sm text-slate-500">{item.provider ?? "Unknown provider"}</div>
-            <div className="mt-3 text-2xl font-semibold">{item.weightedScore}</div>
-            <div className="text-sm text-slate-500">{item.appearanceCount} benchmark appearances</div>
-          </div>
-        ))}
+    <section className="card mb-6 p-4 sm:p-6 overflow-hidden">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <h2 className="text-lg font-semibold font-heading">Overall Top 3</h2>
+        <p className="max-w-xl text-sm leading-relaxed" style={{ color: "var(--page-text-muted)" }}>
+          Each benchmark is normalized to a 0-100 scale, then weighted by importance.
+          The overall score is the sum of weighted normalized scores across all benchmarks
+          a model appears in. Higher is better. Models appearing in more benchmarks have
+          more opportunity to accumulate score.
+        </p>
+      </div>
+      <div className="mt-4 grid gap-3 sm:gap-4 lg:grid-cols-3">
+        {data.map((item) => {
+          const rs = RANK_STYLES[item.overallRank - 1] ?? DEFAULT_RANK;
+          return (
+            <div
+              key={item.id}
+              className="rounded-2xl border p-4 sm:p-5 min-w-0 overflow-hidden"
+              style={{ background: rs.bg, color: rs.text, borderColor: rs.border }}
+            >
+              <div className="flex gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold uppercase tracking-wide opacity-60">
+                    Rank #{item.overallRank}
+                  </div>
+                  <div className="mt-1 truncate text-lg font-semibold font-heading" title={item.modelName}>
+                    {item.modelName}
+                  </div>
+                  <div className="text-sm" style={{ color: "var(--page-text-muted)" }}>{item.provider ?? "Unknown provider"}</div>
+                  <div className="mt-3 text-2xl font-bold tabular-nums">{item.weightedScore}</div>
+                  <div className="text-xs" style={{ color: "var(--page-text-muted)" }}>
+                    {item.appearanceCount} benchmark{item.appearanceCount !== 1 ? "s" : ""}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-end gap-1.5 pt-5 shrink-0 max-w-[45%]">
+                  {item.includedBenchmarks.map((benchKey) => {
+                    const category = BENCHMARK_CATEGORIES[benchKey];
+                    const cs = CATEGORY_STYLES[category];
+                    return (
+                      <span
+                        key={benchKey}
+                        className="inline-block whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                        style={{ background: cs.bg, color: cs.text, borderColor: cs.border }}
+                      >
+                        {STRENGTH_LABELS[benchKey]}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,19 +1,63 @@
+@import "./theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-}
-
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  font-family: var(--font-family-base);
+  background-color: var(--page-bg);
+  color: var(--page-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container-shell {
-  @apply mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8;
+  @apply mx-auto max-w-7xl px-6 py-8 md:px-10 lg:px-12;
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200 bg-white shadow-soft;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+/* ── Print / Export CSS ── */
+@media print {
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .card,
+  table {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  section > div:nth-child(n + 4) {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .card {
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+    border-radius: 8px;
+  }
 }

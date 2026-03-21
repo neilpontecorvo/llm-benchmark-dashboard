@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/db";
 import { runRefresh } from "@/lib/refresh";
 
 runRefresh(10)
@@ -5,4 +6,7 @@ runRefresh(10)
   .catch((error) => {
     console.error(error);
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

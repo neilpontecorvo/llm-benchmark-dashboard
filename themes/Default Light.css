@@ -1,0 +1,74 @@
+/* Default Light — LLM Benchmark Dashboard */
+:root {
+  --font-family-base:        "Inter", system-ui, -apple-system, sans-serif;
+  --font-family-mono:        "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-family-heading:     var(--font-family-base);
+
+  --page-bg:                 #f8fafc;
+  --page-text:               #0f172a;
+  --page-text-muted:         #64748b;
+  --page-text-faint:         #94a3b8;
+
+  --card-bg:                 #ffffff;
+  --card-border:             #e2e8f0;
+  --card-shadow:             0 10px 30px rgba(15, 23, 42, 0.08);
+  --card-radius:             1.25rem;
+
+  --btn-primary-bg:          #0f172a;
+  --btn-primary-text:        #ffffff;
+  --btn-secondary-bg:        #ffffff;
+  --btn-secondary-text:      #0f172a;
+  --btn-secondary-border:    #e2e8f0;
+  --btn-radius:              0.75rem;
+
+  --link-color:              #2563eb;
+
+  --table-header-text:       #64748b;
+  --table-header-border:     #e2e8f0;
+  --table-row-border:        #f1f5f9;
+  --table-top3-bg:           rgba(248, 250, 252, 0.6);
+  --table-rank-text:         #94a3b8;
+  --table-model-text:        var(--page-text);
+  --table-provider-text:     #475569;
+
+  --scorebar-track:          #f1f5f9;
+  --scorebar-height:         0.625rem;
+  --heat-0-from:             #6366f1;
+  --heat-0-to:               #3b82f6;
+  --heat-20-from:            #3b82f6;
+  --heat-20-to:              #22d3ee;
+  --heat-40-from:            #22d3ee;
+  --heat-40-to:              #eab308;
+  --heat-60-from:            #eab308;
+  --heat-60-to:              #f97316;
+  --heat-80-from:            #f97316;
+  --heat-80-to:              #ef4444;
+
+  --rank1-bg:                #fffbeb;
+  --rank1-text:              #b45309;
+  --rank1-border:            #fcd34d;
+  --rank2-bg:                #f8fafc;
+  --rank2-text:              #475569;
+  --rank2-border:            #cbd5e1;
+  --rank3-bg:                #fff7ed;
+  --rank3-text:              #c2410c;
+  --rank3-border:            #fdba74;
+
+  --cat-general-bg:          #dbeafe;   --cat-general-text:          #1d4ed8;   --cat-general-border:        #bfdbfe;
+  --cat-coding-bg:           #ede9fe;   --cat-coding-text:           #6d28d9;   --cat-coding-border:         #ddd6fe;
+  --cat-agentic-bg:          #d1fae5;   --cat-agentic-text:          #047857;   --cat-agentic-border:        #a7f3d0;
+  --cat-open-only-bg:        #ffedd5;   --cat-open-only-text:        #c2410c;   --cat-open-only-border:      #fed7aa;
+  --cat-community-bg:        #fce7f3;   --cat-community-text:        #be185d;   --cat-community-border:      #fbcfe8;
+  --cat-text-to-image-bg:    #fae8ff;   --cat-text-to-image-text:    #a21caf;   --cat-text-to-image-border:  #f5d0fe;
+  --cat-text-to-video-bg:    #ffe4e6;   --cat-text-to-video-text:    #be123c;   --cat-text-to-video-border:  #fecdd3;
+  --cat-image-to-video-bg:   #fef3c7;   --cat-image-to-video-text:   #b45309;   --cat-image-to-video-border: #fde68a;
+  --cat-reasoning-bg:        #cffafe;   --cat-reasoning-text:        #0e7490;   --cat-reasoning-border:      #a5f3fc;
+  --cat-multilingual-bg:     #ccfbf1;   --cat-multilingual-text:     #0f766e;   --cat-multilingual-border:   #99f6e4;
+
+  --banner-success-bg:       #f0fdf4;   --banner-success-text:       #166534;   --banner-success-border:     #bbf7d0;
+  --banner-warning-bg:       #fffbeb;   --banner-warning-text:       #92400e;   --banner-warning-border:     #fde68a;
+  --banner-error-bg:         #fef2f2;   --banner-error-text:         #991b1b;   --banner-error-border:       #fecaca;
+
+  --badge-live-bg:           #dcfce7;   --badge-live-text:           #15803d;   --badge-live-dot:            #22c55e;
+  --badge-mock-bg:           #f1f5f9;   --badge-mock-text:           #64748b;   --badge-mock-dot:            #94a3b8;
+}

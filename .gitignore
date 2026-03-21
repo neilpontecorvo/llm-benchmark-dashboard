@@ -6,4 +6,10 @@ coverage
 playwright-report
 prisma/dev.db
 prisma/dev.db-journal
+dev.db
+dev.db-journal
 exports
+.DS_Store
+.claude/
+tsconfig.tsbuildinfo
+Master Project Prompt.md

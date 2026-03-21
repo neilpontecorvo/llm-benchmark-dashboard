@@ -9,10 +9,12 @@ export abstract class BaseAdapter implements BenchmarkAdapter {
   abstract includedInOverall: boolean;
 
   async fetchTopResults(limit = 10): Promise<BenchmarkResult[]> {
-    if (this.shouldUseMock()) {
-      return normalizeScores(mockResultsForBenchmark(this, limit));
-    }
-    return this.fetchLive(limit);
+    const isMock = this.shouldUseMock();
+    const rows = isMock
+      ? normalizeScores(mockResultsForBenchmark(this, limit))
+      : await this.fetchLive(limit);
+    const source = isMock ? "mock" : "live";
+    return rows.map((r) => ({ ...r, dataSource: source }));
   }
 
   protected shouldUseMock(): boolean {

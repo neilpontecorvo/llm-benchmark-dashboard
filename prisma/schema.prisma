@@ -30,6 +30,7 @@ model BenchmarkResult {
   category         String
   sourceUrl        String
   includedInOverall Boolean
+  dataSource       String   @default("mock")
 }
 
 model OverallResult {

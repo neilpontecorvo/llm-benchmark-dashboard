@@ -1,0 +1,121 @@
+{
+  "project": {
+    "name": "LLM Benchmark Dashboard",
+    "type": "Next.js web app",
+    "status": "functional_core_complete",
+    "generated_at": "2026-03-21",
+    "primary_stack": [
+      "Next.js 15",
+      "TypeScript",
+      "Tailwind CSS",
+      "Prisma",
+      "SQLite",
+      "Playwright"
+    ]
+  },
+  "assets": [
+    {
+      "filename": "README.md",
+      "role": "primary_project_overview",
+      "priority": 1,
+      "notes": "Architecture, benchmark list, weights, routes, env, structure"
+    },
+    {
+      "filename": "ADAPTER_SPEC.md",
+      "role": "adapter_contract",
+      "priority": 2,
+      "notes": "Shared BenchmarkAdapter interface and result requirements"
+    },
+    {
+      "filename": "IMPLEMENTATION_SEQUENCE.md",
+      "role": "phase_tracking",
+      "priority": 3,
+      "notes": "Completed phases, in-progress export work, remaining work"
+    },
+    {
+      "filename": "CODEX_READY_CHECKLIST.md",
+      "role": "readiness_validation",
+      "priority": 4,
+      "notes": "Repository acceptance checks and remaining Codex work"
+    },
+    {
+      "filename": "CODEX_PROMPT.md",
+      "role": "codex_execution_prompt",
+      "priority": 5,
+      "notes": "Execution rules and required behaviors for coding agent handoff"
+    },
+    {
+      "filename": "STRICT_AUDIT_FINDINGS.md",
+      "role": "audit_status",
+      "priority": 6,
+      "notes": "Resolved technical audit items and known limitations"
+    },
+    {
+      "filename": "PROJECT_SYSTEM_PROMPT.md",
+      "role": "project_operating_prompt",
+      "priority": 7,
+      "notes": "Full project-level instruction set for chat or coding agents"
+    },
+    {
+      "filename": "PROJECT_CONTEXT_BRIEF.md",
+      "role": "current_state_summary",
+      "priority": 8,
+      "notes": "Concise architecture, rules, status, and open work snapshot"
+    },
+    {
+      "filename": "PROJECT_IMPLEMENTATION_BACKLOG.md",
+      "role": "ordered_backlog",
+      "priority": 9,
+      "notes": "Prioritized remaining engineering work"
+    },
+    {
+      "filename": "PROJECT_HANDOFF.md",
+      "role": "agent_handoff",
+      "priority": 10,
+      "notes": "Short execution brief for Codex or another coding agent"
+    },
+    {
+      "filename": "PROJECT_SOURCE_MANIFEST.json",
+      "role": "source_manifest",
+      "priority": 11,
+      "notes": "Machine-readable inventory of currently present project assets"
+    },
+    {
+      "filename": "PROJECT_ASSETS_README.md",
+      "role": "asset_pack_overview",
+      "priority": 12,
+      "notes": "Human-readable overview of the asset bundle"
+    }
+  ],
+  "benchmark_policy": {
+    "normalization": "per_benchmark_0_to_100",
+    "overall_scoring": "weighted_sum_after_normalization",
+    "excluded_from_overall": [
+      "hf_open_llm"
+    ],
+    "must_preserve_full_model_names": true,
+    "must_preserve_seed_and_mock_fallbacks": true,
+    "must_isolate_adapter_failures": true
+  },
+  "remaining_work": {
+    "phase_6_export": [
+      "validate 12-table export layout",
+      "refine print CSS",
+      "add timestamp filename convention",
+      "test mixed row counts"
+    ],
+    "phase_7_testing": [
+      "adapter fixture tests",
+      "normalization tests",
+      "ranking tests",
+      "refresh integration test",
+      "export smoke test"
+    ],
+    "phase_8_deployment": [
+      "production database target",
+      "environment validation",
+      "Vercel or Docker config",
+      "scheduled refresh"
+    ]
+  }
+}

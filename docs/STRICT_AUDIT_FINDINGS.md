@@ -1,78 +1,78 @@
 # Strict Audit Findings
 
-This audit covered:
-- TypeScript path alias consistency
-- Tailwind and PostCSS compatibility
-- Route/runtime behavior in refresh and export handlers
-- Prisma seed and runtime validation
+Original audit covered TypeScript path aliases, Tailwind/PostCSS, route/runtime behavior, Prisma validation, and export robustness. Updated to reflect current resolution status.
 
 ## Findings
 
 ### 1) TypeScript path aliases
-Status: needs patch
+Status: **RESOLVED**
 
-Issue:
-- `tsconfig.json` defines `paths` for `@/*` but does not define `baseUrl`.
-- This is fragile for TypeScript resolution and for tools that consume tsconfig path aliases outside the Next.js build context.
-
-Recommended patch:
-- Add `"baseUrl": "."` to `compilerOptions`.
+Original issue: `tsconfig.json` defined `paths` for `@/*` without `baseUrl`.
+Resolution: `baseUrl: "."` was added. All imports resolve correctly. `npx tsc --noEmit` passes clean.
 
 ### 2) Tailwind/PostCSS compatibility
-Status: acceptable, with one documentation note
+Status: **RESOLVED** (no code change needed)
 
 Verified:
 - `tailwind.config.ts` content globs cover `app`, `components`, and `lib`.
 - `postcss.config.js` correctly enables `tailwindcss` and `autoprefixer`.
 - `app/globals.css` correctly imports Tailwind layers.
-
-No required code patch here.
+- 10 benchmark categories now have color mappings in `benchmark-card.tsx`.
 
 ### 3) Route/runtime behavior
-Status: needs patch
+Status: **RESOLVED**
 
-Issues:
-- Export routes launch Playwright and read from the file system, but do not explicitly declare `runtime = "nodejs"`.
-- Export and refresh routes do not wrap failures in structured HTTP 500 responses.
-- Export render page should be forced dynamic to avoid stale cached exports.
-
-Recommended patch:
-- Add `export const runtime = "nodejs"` to:
-  - `app/api/benchmarks/route.ts`
-  - `app/api/refresh/route.ts`
-  - `app/api/export/pdf/route.ts`
-  - `app/api/export/png/route.ts`
-- Add `export const dynamic = "force-dynamic"` to the same routes and to `app/export/report/page.tsx`.
-- Add try/catch handling in those route handlers.
+Applied:
+- `export const runtime = "nodejs"` on all API routes.
+- `export const dynamic = "force-dynamic"` on API routes and export render page.
+- try/catch wrappers returning structured HTTP 500 on failure.
 
 ### 4) Export helper robustness
-Status: needs patch
+Status: **RESOLVED**
 
-Issues:
-- `lib/export.ts` accepts `APP_URL` without validation.
-- `page.goto` does not set an explicit timeout.
+Applied:
+- `APP_URL` validated with `new URL()`.
+- Trailing slash normalization.
+- Explicit 45-second timeout on `page.goto`.
 
-Recommended patch:
-- Validate `APP_URL` with `new URL()`.
-- Normalize trailing slash handling.
-- Add explicit timeout to export page navigation.
+Note: Export page now needs layout verification for 12 benchmark tables (expanded from original 6).
 
 ### 5) Prisma runtime validation
-Status: needs patch
+Status: **RESOLVED**
 
-Issues:
-- `lib/db.ts` does not fail early with a clear message when `DATABASE_URL` is missing.
-- `scripts/test-refresh.ts` does not disconnect Prisma on completion.
-- `package.json` does not register Prisma seed config for `prisma db seed`.
+Applied:
+- `getDatabaseUrl()` helper in `lib/db.ts` with clear error message.
+- `PrismaClient` uses `datasourceUrl` from validated env.
+- Prisma seed config registered in `package.json`.
 
-Recommended patch:
-- Add a small `getDatabaseUrl()` helper in `lib/db.ts`.
-- Use PrismaClient with `datasourceUrl` from validated env.
-- Add `prisma.$disconnect()` in `scripts/test-refresh.ts`.
-- Add Prisma seed registration to `package.json`.
+Additional schema changes since audit:
+- `dataSource` column added to `BenchmarkResult` model (`String @default("mock")`).
+
+### 6) New finding: Hydration mismatch (cosmetic)
+Status: **RESOLVED**
+
+Issue: Dark Reader browser extension injects `data-darkreader-*` attributes causing React hydration warnings.
+Resolution: `suppressHydrationWarning` added to `<html>` and `<body>` in `app/layout.tsx`. No functional impact.
+
+### 7) New finding: Adapter data coverage
+Status: **KNOWN LIMITATION**
+
+Observations:
+- Vellum benchmarks (GPQA Diamond, HLE, MMMLU) only expose top 5 models.
+- LiveBench aggregator data may be stale (missing recent frontier models).
+- Arena multimodal adapters use seed data from manual scrape (March 2026).
+
+Recommended future work:
+- Implement headless browser scraping for LiveBench and Arena.
+- Monitor Vellum for expanded data access.
+- Add `lastSeedDate` metadata to track staleness of seed data.
 
 ## Conclusion
 
-The repo is close to Codex-ready. The main remaining hardening items are runtime declarations, error handling, Prisma validation, and the tsconfig alias fix.
+All original audit findings have been resolved. The project has expanded significantly since the initial audit:
+- 6 benchmarks → 12 benchmarks
+- Pure mock mode → selective live/mock rollout
+- No data source tracking → `dataSource` field through full pipeline
+- Basic UI → Live/mock badges, score bars, weight indicators, status banners
 
-See `docs/STRICT_AUDIT_PATCH.diff` for the exact patch set.
+Remaining hardening targets are testing (Phase 7) and deployment (Phase 8).

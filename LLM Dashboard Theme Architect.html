@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Dashboard Theme Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&family=Poppins:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Lato:wght@400;700;900&family=Source+Sans+3:wght@400;600;700&family=Merriweather:wght@400;700;900&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&family=Libre+Baskerville:wght@400;700&family=Crimson+Text:wght@400;600;700&family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;600;700;800&family=Fira+Code:wght@400;700&family=Source+Code+Pro:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style id="theme-live-css">
+        :root {
+            --font-family-base: "Inter", system-ui, -apple-system, sans-serif;
+            --font-family-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+            --font-family-heading: var(--font-family-base);
+            --page-bg: #f8fafc; --page-text: #0f172a; --page-text-muted: #64748b; --page-text-faint: #94a3b8;
+            --card-bg: #ffffff; --card-border: #e2e8f0; --card-shadow: 0 10px 30px rgba(15,23,42,0.08); --card-radius: 1.25rem;
+            --btn-primary-bg: #0f172a; --btn-primary-text: #ffffff;
+            --btn-secondary-bg: #ffffff; --btn-secondary-text: #0f172a; --btn-secondary-border: #e2e8f0;
+            --link-color: #2563eb;
+            --table-header-text: #64748b; --table-header-border: #e2e8f0; --table-row-border: #f1f5f9;
+            --table-top3-bg: rgba(248,250,252,0.6); --table-rank-text: #94a3b8; --table-provider-text: #475569;
+            --scorebar-track: #f1f5f9;
+            --heat-0-from: #6366f1; --heat-0-to: #3b82f6;
+            --heat-20-from: #3b82f6; --heat-20-to: #22d3ee;
+            --heat-40-from: #22d3ee; --heat-40-to: #eab308;
+            --heat-60-from: #eab308; --heat-60-to: #f97316;
+            --heat-80-from: #f97316; --heat-80-to: #ef4444;
+            --rank1-bg: #fffbeb; --rank1-text: #b45309; --rank1-border: #fcd34d;
+            --rank2-bg: #f8fafc; --rank2-text: #475569; --rank2-border: #cbd5e1;
+            --rank3-bg: #fff7ed; --rank3-text: #c2410c; --rank3-border: #fdba74;
+            --cat-general-bg: #dbeafe; --cat-general-text: #1d4ed8; --cat-general-border: #bfdbfe;
+            --cat-coding-bg: #ede9fe; --cat-coding-text: #6d28d9; --cat-coding-border: #ddd6fe;
+            --cat-agentic-bg: #d1fae5; --cat-agentic-text: #047857; --cat-agentic-border: #a7f3d0;
+            --cat-open-only-bg: #ffedd5; --cat-open-only-text: #c2410c; --cat-open-only-border: #fed7aa;
+            --cat-community-bg: #fce7f3; --cat-community-text: #be185d; --cat-community-border: #fbcfe8;
+            --cat-text-to-image-bg: #fae8ff; --cat-text-to-image-text: #a21caf; --cat-text-to-image-border: #f5d0fe;
+            --cat-text-to-video-bg: #ffe4e6; --cat-text-to-video-text: #be123c; --cat-text-to-video-border: #fecdd3;
+            --cat-image-to-video-bg: #fef3c7; --cat-image-to-video-text: #b45309; --cat-image-to-video-border: #fde68a;
+            --cat-reasoning-bg: #cffafe; --cat-reasoning-text: #0e7490; --cat-reasoning-border: #a5f3fc;
+            --cat-multilingual-bg: #ccfbf1; --cat-multilingual-text: #0f766e; --cat-multilingual-border: #99f6e4;
+            --banner-success-bg: #f0fdf4; --banner-success-text: #166534; --banner-success-border: #bbf7d0;
+            --banner-warning-bg: #fffbeb; --banner-warning-text: #92400e; --banner-warning-border: #fde68a;
+            --banner-error-bg: #fef2f2; --banner-error-text: #991b1b; --banner-error-border: #fecaca;
+            --badge-live-bg: #dcfce7; --badge-live-text: #15803d; --badge-live-dot: #22c55e;
+            --badge-mock-bg: #f1f5f9; --badge-mock-text: #64748b; --badge-mock-dot: #94a3b8;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: "Inter", sans-serif; margin: 0; }
+        .preview-area { font-family: var(--font-family-base); background: var(--page-bg); color: var(--page-text); transition: background 0.3s, color 0.3s; }
+        .pv-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--card-radius); box-shadow: var(--card-shadow); overflow: hidden; }
+        .rank-1 { background: var(--rank1-bg); color: var(--rank1-text); border-color: var(--rank1-border); }
+        .rank-2 { background: var(--rank2-bg); color: var(--rank2-text); border-color: var(--rank2-border); }
+        .rank-3 { background: var(--rank3-bg); color: var(--rank3-text); border-color: var(--rank3-border); }
+        .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+        .btn-pv { padding: 8px 18px; border-radius: 0.75rem; font-weight: 700; font-size: 13px; border: none; cursor: pointer; }
+        .btn-pv-primary { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
+        .btn-pv-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: 1px solid var(--btn-secondary-border); }
+        .banner { padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 500; border: 1px solid; display: flex; align-items: center; gap: 8px; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+        .heat-bar { height: 8px; border-radius: 999px; }
+        .section-toggle { cursor: pointer; user-select: none; }
+        .section-toggle:hover { opacity: 0.8; }
+        .section-body.collapsed { display: none; }
+        .editor-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; transition: border-color 0.15s; }
+        .editor-row:hover { border-color: #3b82f6; }
+        .swatch-wrap { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
+        .swatch { width: 100%; height: 100%; border-radius: 6px; border: 1px solid #475569; }
+        .swatch-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+        .var-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; }
+        .var-value { font-size: 11px; font-family: "JetBrains Mono", monospace; color: #e2e8f0; background: transparent; border: none; outline: none; width: 100%; text-transform: uppercase; }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: #0f172a; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden bg-slate-950 text-slate-200">
+
+<!-- SIDEBAR -->
+<aside class="w-[420px] h-full flex flex-col bg-slate-900 border-r border-slate-800 shadow-2xl z-20 flex-shrink-0">
+    <div class="p-5 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-lg font-black tracking-tight text-white">THEME ARCHITECT</h1>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">LLM Dashboard Variable Controller</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="importTheme()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all" title="Import a .css theme file">Import</button>
+                <button onclick="exportTheme()" class="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all shadow-lg shadow-blue-900/30">Export .CSS</button>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+            <button onclick="resetToDefaults()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded text-[10px] font-bold uppercase text-slate-400 transition-all">Reset Defaults</button>
+            <button onclick="clearAutosave()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded text-[10px] font-bold uppercase text-slate-400 transition-all" title="Clear saved state">Clear Save</button>
+        </div>
+        <input type="file" id="import-input" accept=".css,text/css" class="hidden" onchange="handleImport(event)">
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-1 sidebar" id="controls-container"></div>
+
+    <div class="p-3 border-t border-slate-800 text-center">
+        <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Auto-saved to browser</p>
+    </div>
+</aside>
+
+<!-- LIVE PREVIEW -->
+<main class="flex-1 overflow-y-auto preview-area">
+    <div class="max-w-5xl mx-auto p-10 space-y-10">
+
+        <!-- Dashboard Header -->
+        <div class="pv-card p-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight" style="font-family: var(--font-family-heading)">LLM Benchmark Dashboard</h1>
+                    <p class="mt-1 text-sm" style="color: var(--page-text-muted)">Last refreshed: 3/21/2026, 2:30:00 PM</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button class="btn-pv btn-pv-primary">Refresh</button>
+                    <button class="btn-pv btn-pv-secondary">Export PDF</button>
+                    <button class="btn-pv btn-pv-secondary">Export PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Banners -->
+        <div class="space-y-3">
+            <div class="banner" style="background: var(--banner-success-bg); color: var(--banner-success-text); border-color: var(--banner-success-border);">&#10003; All benchmarks refreshed successfully.</div>
+            <div class="banner" style="background: var(--banner-warning-bg); color: var(--banner-warning-text); border-color: var(--banner-warning-border);">&#9888; Data may be outdated. Last refresh was 26 hours ago.</div>
+            <div class="banner" style="background: var(--banner-error-bg); color: var(--banner-error-text); border-color: var(--banner-error-border);">&#10007; Refresh failed. Check server logs for details.</div>
+        </div>
+
+        <!-- Overall Top 3 -->
+        <div class="pv-card p-6">
+            <div class="flex justify-between items-start gap-4 mb-5">
+                <h2 class="text-xl font-bold" style="font-family: var(--font-family-heading)">Overall Top 3</h2>
+                <p class="text-xs max-w-sm leading-relaxed" style="color: var(--page-text-muted)">Each benchmark is normalized to a 0-100 scale, then weighted by importance. Higher is better.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="pv-card p-5 rank-1">
+                    <div class="text-[9px] font-bold uppercase tracking-wider opacity-60">Rank #1</div>
+                    <div class="text-lg font-bold mt-1 truncate" style="font-family: var(--font-family-heading)">Gemini 3 Pro</div>
+                    <div class="text-xs" style="color: var(--page-text-muted)">Google DeepMind</div>
+                    <div class="text-3xl font-black mt-3 tabular-nums">35.88</div>
+                    <div class="text-[10px]" style="color: var(--page-text-muted)">11 benchmarks</div>
+                    <div class="flex flex-wrap gap-1 mt-3">
+                        <span class="pill" style="background: var(--cat-general-bg); color: var(--cat-general-text);">Intelligence</span>
+                        <span class="pill" style="background: var(--cat-community-bg); color: var(--cat-community-text);">Community</span>
+                        <span class="pill" style="background: var(--cat-reasoning-bg); color: var(--cat-reasoning-text);">Reasoning</span>
+                        <span class="pill" style="background: var(--cat-coding-bg); color: var(--cat-coding-text);">Coding</span>
+                    </div>
+                </div>
+                <div class="pv-card p-5 rank-2">
+                    <div class="text-[9px] font-bold uppercase tracking-wider opacity-60">Rank #2</div>
+                    <div class="text-lg font-bold mt-1 truncate" style="font-family: var(--font-family-heading)">GPT-5.4 High</div>
+                    <div class="text-xs" style="color: var(--page-text-muted)">OpenAI</div>
+                    <div class="text-3xl font-black mt-3 tabular-nums">20.19</div>
+                    <div class="text-[10px]" style="color: var(--page-text-muted)">5 benchmarks</div>
+                    <div class="flex flex-wrap gap-1 mt-3">
+                        <span class="pill" style="background: var(--cat-general-bg); color: var(--cat-general-text);">Intelligence</span>
+                        <span class="pill" style="background: var(--cat-reasoning-bg); color: var(--cat-reasoning-text);">Reasoning</span>
+                    </div>
+                </div>
+                <div class="pv-card p-5 rank-3">
+                    <div class="text-[9px] font-bold uppercase tracking-wider opacity-60">Rank #3</div>
+                    <div class="text-lg font-bold mt-1 truncate" style="font-family: var(--font-family-heading)">Veo 3.1 Audio 1080p</div>
+                    <div class="text-xs" style="color: var(--page-text-muted)">Google DeepMind</div>
+                    <div class="text-3xl font-black mt-3 tabular-nums">14.81</div>
+                    <div class="text-[10px]" style="color: var(--page-text-muted)">3 benchmarks</div>
+                    <div class="flex flex-wrap gap-1 mt-3">
+                        <span class="pill" style="background: var(--cat-text-to-image-bg); color: var(--cat-text-to-image-text);">Image Gen</span>
+                        <span class="pill" style="background: var(--cat-text-to-video-bg); color: var(--cat-text-to-video-text);">Video</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benchmark Cards (2-col) -->
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Intelligence Index -->
+            <div class="pv-card">
+                <div class="p-5" style="border-bottom: 1px solid var(--card-border);">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="text-sm font-bold" style="font-family: var(--font-family-heading)">Artificial Analysis Intelligence Index</h3>
+                        <span class="pill" style="background: var(--cat-general-bg); color: var(--cat-general-text); border: 1px solid var(--cat-general-border);">General</span>
+                        <span class="badge" style="background: var(--badge-live-bg); color: var(--badge-live-text);"><span style="width:6px;height:6px;border-radius:50%;background:var(--badge-live-dot);display:inline-block;"></span> Live</span>
+                    </div>
+                    <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--page-text-muted)">Composite intelligence score evaluating reasoning, coding, math, and knowledge.</p>
+                    <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: var(--page-text-muted)">
+                        <a href="#" style="color: var(--link-color); text-decoration: underline;">Source</a>
+                        <span style="color: var(--page-text-faint)">|</span>
+                        <span>15% of overall score</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                        <thead><tr style="border-bottom: 1px solid var(--table-header-border); color: var(--table-header-text); text-align: left;">
+                            <th style="padding:6px 8px; width:30px;">#</th><th style="padding:6px 8px;">Model</th><th style="padding:6px 8px;">Provider</th><th style="padding:6px 8px; text-align:right;">Raw</th><th style="padding:6px 8px; width:120px;">Score</th>
+                        </tr></thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">1</td><td style="padding:5px 8px; font-weight:500;">GPT-5.4 High</td><td style="padding:5px 8px; color: var(--table-provider-text);">OpenAI</td><td style="padding:5px 8px; text-align:right;">86.07</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:100%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">100</span></div></td></tr>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">2</td><td style="padding:5px 8px; font-weight:500;">Claude Opus 4.6 Thinking</td><td style="padding:5px 8px; color: var(--table-provider-text);">Anthropic</td><td style="padding:5px 8px; text-align:right;">85.29</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:90%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">90</span></div></td></tr>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">3</td><td style="padding:5px 8px; font-weight:500;">Gemini 3 Pro</td><td style="padding:5px 8px; color: var(--table-provider-text);">Google DeepMind</td><td style="padding:5px 8px; text-align:right;">80.17</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:72%;background:linear-gradient(90deg,var(--heat-60-from),var(--heat-60-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-60-to);width:22px;text-align:right;">72</span></div></td></tr>
+                            <tr style="border-bottom: 1px solid var(--table-row-border);"><td style="padding:5px 8px; color: var(--table-rank-text);">4</td><td style="padding:5px 8px; font-weight:500;">Grok 3.5</td><td style="padding:5px 8px; color: var(--table-provider-text);">xAI</td><td style="padding:5px 8px; text-align:right;">67.28</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:48%;background:linear-gradient(90deg,var(--heat-40-from),var(--heat-40-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-40-to);width:22px;text-align:right;">48</span></div></td></tr>
+                            <tr style="border-bottom: 1px solid var(--table-row-border);"><td style="padding:5px 8px; color: var(--table-rank-text);">5</td><td style="padding:5px 8px; font-weight:500;">Llama 4 Maverick</td><td style="padding:5px 8px; color: var(--table-provider-text);">Meta</td><td style="padding:5px 8px; text-align:right;">58.50</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:24%;background:linear-gradient(90deg,var(--heat-20-from),var(--heat-20-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-20-to);width:22px;text-align:right;">24</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SWE-bench -->
+            <div class="pv-card">
+                <div class="p-5" style="border-bottom: 1px solid var(--card-border);">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="text-sm font-bold" style="font-family: var(--font-family-heading)">SWE-bench Verified</h3>
+                        <span class="pill" style="background: var(--cat-coding-bg); color: var(--cat-coding-text); border: 1px solid var(--cat-coding-border);">Coding</span>
+                        <span class="badge" style="background: var(--badge-live-bg); color: var(--badge-live-text);"><span style="width:6px;height:6px;border-radius:50%;background:var(--badge-live-dot);display:inline-block;"></span> Live</span>
+                    </div>
+                    <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--page-text-muted)">Measures ability to resolve real GitHub issues from popular Python repos.</p>
+                    <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: var(--page-text-muted)">
+                        <a href="#" style="color: var(--link-color); text-decoration: underline;">Source</a>
+                        <span style="color: var(--page-text-faint)">|</span><span>10% of overall score</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                        <thead><tr style="border-bottom: 1px solid var(--table-header-border); color: var(--table-header-text); text-align: left;"><th style="padding:6px 8px; width:30px;">#</th><th style="padding:6px 8px;">Model</th><th style="padding:6px 8px;">Provider</th><th style="padding:6px 8px; text-align:right;">Raw</th><th style="padding:6px 8px; width:120px;">Score</th></tr></thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">1</td><td style="padding:5px 8px; font-weight:500;">live-SWE-agent + Claude 4.5</td><td style="padding:5px 8px; color: var(--table-provider-text);">Anthropic</td><td style="padding:5px 8px; text-align:right;">75.2%</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:100%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">100</span></div></td></tr>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">2</td><td style="padding:5px 8px; font-weight:500;">Devlo</td><td style="padding:5px 8px; color: var(--table-provider-text);">Bisect</td><td style="padding:5px 8px; text-align:right;">75.2%</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:100%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">100</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- GPQA Diamond -->
+            <div class="pv-card">
+                <div class="p-5" style="border-bottom: 1px solid var(--card-border);">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="text-sm font-bold" style="font-family: var(--font-family-heading)">GPQA Diamond</h3>
+                        <span class="pill" style="background: var(--cat-reasoning-bg); color: var(--cat-reasoning-text); border: 1px solid var(--cat-reasoning-border);">Reasoning</span>
+                        <span class="badge" style="background: var(--badge-mock-bg); color: var(--badge-mock-text);"><span style="width:6px;height:6px;border-radius:50%;background:var(--badge-mock-dot);display:inline-block;"></span> Mock</span>
+                    </div>
+                    <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--page-text-muted)">Graduate-level science questions validated by domain experts.</p>
+                    <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: var(--page-text-muted)">
+                        <a href="#" style="color: var(--link-color); text-decoration: underline;">Source</a>
+                        <span style="color: var(--page-text-faint)">|</span><span>10% of overall score</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                        <thead><tr style="border-bottom: 1px solid var(--table-header-border); color: var(--table-header-text); text-align: left;"><th style="padding:6px 8px; width:30px;">#</th><th style="padding:6px 8px;">Model</th><th style="padding:6px 8px;">Provider</th><th style="padding:6px 8px; text-align:right;">Raw</th><th style="padding:6px 8px; width:120px;">Score</th></tr></thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">1</td><td style="padding:5px 8px; font-weight:500;">Claude 3 Opus</td><td style="padding:5px 8px; color: var(--table-provider-text);">Anthropic</td><td style="padding:5px 8px; text-align:right;">85.4%</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:100%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">100</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LM Arena -->
+            <div class="pv-card">
+                <div class="p-5" style="border-bottom: 1px solid var(--card-border);">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 class="text-sm font-bold" style="font-family: var(--font-family-heading)">LM Arena Text</h3>
+                        <span class="pill" style="background: var(--cat-community-bg); color: var(--cat-community-text); border: 1px solid var(--cat-community-border);">Community</span>
+                        <span class="badge" style="background: var(--badge-live-bg); color: var(--badge-live-text);"><span style="width:6px;height:6px;border-radius:50%;background:var(--badge-live-dot);display:inline-block;"></span> Live</span>
+                    </div>
+                    <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--page-text-muted)">Community-driven ELO ranking from blind pairwise comparisons.</p>
+                    <div class="flex items-center gap-3 mt-1.5 text-xs" style="color: var(--page-text-muted)">
+                        <a href="#" style="color: var(--link-color); text-decoration: underline;">Source</a>
+                        <span style="color: var(--page-text-faint)">|</span><span>12% of overall score</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                        <thead><tr style="border-bottom: 1px solid var(--table-header-border); color: var(--table-header-text); text-align: left;"><th style="padding:6px 8px; width:30px;">#</th><th style="padding:6px 8px;">Model</th><th style="padding:6px 8px;">Provider</th><th style="padding:6px 8px; text-align:right;">Raw</th><th style="padding:6px 8px; width:120px;">Score</th></tr></thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--table-row-border); background: var(--table-top3-bg);"><td style="padding:5px 8px; color: var(--table-rank-text);">1</td><td style="padding:5px 8px; font-weight:500;">Gemini 3 Pro</td><td style="padding:5px 8px; color: var(--table-provider-text);">Google DeepMind</td><td style="padding:5px 8px; text-align:right;">1488 ELO</td><td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:8px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:100%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span style="font-size:10px;font-weight:600;color:var(--heat-80-to);width:22px;text-align:right;">100</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- All Category Pills -->
+            <div class="pv-card p-5 col-span-2">
+                <h4 class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--page-text-muted);">All 10 Category Pills</h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="pill" style="background:var(--cat-general-bg);color:var(--cat-general-text);border:1px solid var(--cat-general-border);">General</span>
+                    <span class="pill" style="background:var(--cat-coding-bg);color:var(--cat-coding-text);border:1px solid var(--cat-coding-border);">Coding</span>
+                    <span class="pill" style="background:var(--cat-agentic-bg);color:var(--cat-agentic-text);border:1px solid var(--cat-agentic-border);">Agentic</span>
+                    <span class="pill" style="background:var(--cat-open-only-bg);color:var(--cat-open-only-text);border:1px solid var(--cat-open-only-border);">Open-Only</span>
+                    <span class="pill" style="background:var(--cat-community-bg);color:var(--cat-community-text);border:1px solid var(--cat-community-border);">Community</span>
+                    <span class="pill" style="background:var(--cat-text-to-image-bg);color:var(--cat-text-to-image-text);border:1px solid var(--cat-text-to-image-border);">Text to Image</span>
+                    <span class="pill" style="background:var(--cat-text-to-video-bg);color:var(--cat-text-to-video-text);border:1px solid var(--cat-text-to-video-border);">Text to Video</span>
+                    <span class="pill" style="background:var(--cat-image-to-video-bg);color:var(--cat-image-to-video-text);border:1px solid var(--cat-image-to-video-border);">Image to Video</span>
+                    <span class="pill" style="background:var(--cat-reasoning-bg);color:var(--cat-reasoning-text);border:1px solid var(--cat-reasoning-border);">Reasoning</span>
+                    <span class="pill" style="background:var(--cat-multilingual-bg);color:var(--cat-multilingual-text);border:1px solid var(--cat-multilingual-border);">Multilingual</span>
+                </div>
+            </div>
+
+            <!-- Heat Gradient Scale -->
+            <div class="pv-card p-5 col-span-2">
+                <h4 class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--page-text-muted);">Score Bar Heat Gradient (5 Tiers)</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3"><span class="text-[10px] font-bold w-12" style="color:var(--page-text-faint);">0-19</span><div style="flex:1;height:10px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:15%;background:linear-gradient(90deg,var(--heat-0-from),var(--heat-0-to));"></div></div><span class="text-[10px] font-bold w-6 text-right" style="color:var(--heat-0-to);">15</span></div>
+                    <div class="flex items-center gap-3"><span class="text-[10px] font-bold w-12" style="color:var(--page-text-faint);">20-39</span><div style="flex:1;height:10px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:35%;background:linear-gradient(90deg,var(--heat-20-from),var(--heat-20-to));"></div></div><span class="text-[10px] font-bold w-6 text-right" style="color:var(--heat-20-to);">35</span></div>
+                    <div class="flex items-center gap-3"><span class="text-[10px] font-bold w-12" style="color:var(--page-text-faint);">40-59</span><div style="flex:1;height:10px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:55%;background:linear-gradient(90deg,var(--heat-40-from),var(--heat-40-to));"></div></div><span class="text-[10px] font-bold w-6 text-right" style="color:var(--heat-40-to);">55</span></div>
+                    <div class="flex items-center gap-3"><span class="text-[10px] font-bold w-12" style="color:var(--page-text-faint);">60-79</span><div style="flex:1;height:10px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:75%;background:linear-gradient(90deg,var(--heat-60-from),var(--heat-60-to));"></div></div><span class="text-[10px] font-bold w-6 text-right" style="color:var(--heat-60-to);">75</span></div>
+                    <div class="flex items-center gap-3"><span class="text-[10px] font-bold w-12" style="color:var(--page-text-faint);">80-100</span><div style="flex:1;height:10px;border-radius:999px;background:var(--scorebar-track);overflow:hidden;"><div class="heat-bar" style="width:95%;background:linear-gradient(90deg,var(--heat-80-from),var(--heat-80-to));"></div></div><span class="text-[10px] font-bold w-6 text-right" style="color:var(--heat-80-to);">95</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+const SECTIONS = [
+    { id: 'typography', label: 'Typography', type: 'font' },
+    { id: 'page', label: 'Page', vars: { '--page-bg': '#f8fafc', '--page-text': '#0f172a', '--page-text-muted': '#64748b', '--page-text-faint': '#94a3b8' }},
+    { id: 'cards', label: 'Cards', vars: { '--card-bg': '#ffffff', '--card-border': '#e2e8f0' }},
+    { id: 'buttons', label: 'Buttons', vars: { '--btn-primary-bg': '#0f172a', '--btn-primary-text': '#ffffff', '--btn-secondary-bg': '#ffffff', '--btn-secondary-text': '#0f172a', '--btn-secondary-border': '#e2e8f0' }},
+    { id: 'links', label: 'Links', vars: { '--link-color': '#2563eb' }},
+    { id: 'tables', label: 'Tables', vars: { '--table-header-text': '#64748b', '--table-header-border': '#e2e8f0', '--table-row-border': '#f1f5f9', '--table-rank-text': '#94a3b8', '--table-provider-text': '#475569' }},
+    { id: 'scorebar', label: 'Score Bar Heat Gradient', vars: { '--scorebar-track': '#f1f5f9', '--heat-0-from': '#6366f1', '--heat-0-to': '#3b82f6', '--heat-20-from': '#3b82f6', '--heat-20-to': '#22d3ee', '--heat-40-from': '#22d3ee', '--heat-40-to': '#eab308', '--heat-60-from': '#eab308', '--heat-60-to': '#f97316', '--heat-80-from': '#f97316', '--heat-80-to': '#ef4444' }},
+    { id: 'ranks', label: 'Rank Cards (Gold / Silver / Bronze)', vars: { '--rank1-bg': '#fffbeb', '--rank1-text': '#b45309', '--rank1-border': '#fcd34d', '--rank2-bg': '#f8fafc', '--rank2-text': '#475569', '--rank2-border': '#cbd5e1', '--rank3-bg': '#fff7ed', '--rank3-text': '#c2410c', '--rank3-border': '#fdba74' }},
+    { id: 'cat-pills', label: 'Category Pills (10)', vars: { '--cat-general-bg': '#dbeafe', '--cat-general-text': '#1d4ed8', '--cat-general-border': '#bfdbfe', '--cat-coding-bg': '#ede9fe', '--cat-coding-text': '#6d28d9', '--cat-coding-border': '#ddd6fe', '--cat-agentic-bg': '#d1fae5', '--cat-agentic-text': '#047857', '--cat-agentic-border': '#a7f3d0', '--cat-open-only-bg': '#ffedd5', '--cat-open-only-text': '#c2410c', '--cat-open-only-border': '#fed7aa', '--cat-community-bg': '#fce7f3', '--cat-community-text': '#be185d', '--cat-community-border': '#fbcfe8', '--cat-text-to-image-bg': '#fae8ff', '--cat-text-to-image-text': '#a21caf', '--cat-text-to-image-border': '#f5d0fe', '--cat-text-to-video-bg': '#ffe4e6', '--cat-text-to-video-text': '#be123c', '--cat-text-to-video-border': '#fecdd3', '--cat-image-to-video-bg': '#fef3c7', '--cat-image-to-video-text': '#b45309', '--cat-image-to-video-border': '#fde68a', '--cat-reasoning-bg': '#cffafe', '--cat-reasoning-text': '#0e7490', '--cat-reasoning-border': '#a5f3fc', '--cat-multilingual-bg': '#ccfbf1', '--cat-multilingual-text': '#0f766e', '--cat-multilingual-border': '#99f6e4' }},
+    { id: 'banners', label: 'Status Banners', vars: { '--banner-success-bg': '#f0fdf4', '--banner-success-text': '#166534', '--banner-success-border': '#bbf7d0', '--banner-warning-bg': '#fffbeb', '--banner-warning-text': '#92400e', '--banner-warning-border': '#fde68a', '--banner-error-bg': '#fef2f2', '--banner-error-text': '#991b1b', '--banner-error-border': '#fecaca' }},
+    { id: 'badges', label: 'Live / Mock Badges', vars: { '--badge-live-bg': '#dcfce7', '--badge-live-text': '#15803d', '--badge-live-dot': '#22c55e', '--badge-mock-bg': '#f1f5f9', '--badge-mock-text': '#64748b', '--badge-mock-dot': '#94a3b8' }}
+];
+
+const AUTOSAVE_KEY = 'theme-architect-state';
+let currentFont = '"Inter", system-ui, -apple-system, sans-serif';
+function getDefaults() { const d = {}; SECTIONS.forEach(function(s) { if (s.vars) Object.assign(d, s.vars); }); return d; }
+const DEFAULTS = getDefaults();
+let themeVars = JSON.parse(JSON.stringify(DEFAULTS));
+
+function buildControls() {
+    const container = document.getElementById('controls-container');
+    container.innerHTML = '';
+    SECTIONS.forEach(function(section) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mb-1';
+        const header = document.createElement('div');
+        header.className = 'section-toggle flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors';
+        header.innerHTML = '<span class="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">' + section.label + ' <span class="text-slate-600 text-[9px]">(' + (section.vars ? Object.keys(section.vars).length : 1) + ')</span></span><span class="text-slate-600 text-xs transition-transform" id="chevron-' + section.id + '">&#9660;</span>';
+        header.onclick = function() { toggleSection(section.id); };
+        wrapper.appendChild(header);
+        const body = document.createElement('div');
+        body.className = 'section-body space-y-2 mt-1 pl-1';
+        body.id = 'body-' + section.id;
+        if (section.type === 'font') {
+            const fontRow = document.createElement('div');
+            fontRow.className = 'editor-row';
+            fontRow.innerHTML = '<div style="flex:1;"><div class="var-label">Base Font Family</div><select id="font-select" onchange="changeFont(this.value)" style="width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:6px 8px;font-size:11px;margin-top:4px;outline:none;"><optgroup label="Sans-Serif"><option value=\'"Inter", system-ui, -apple-system, sans-serif\'>Inter (Default)</option><option value=\'system-ui, -apple-system, BlinkMacSystemFont, sans-serif\'>System Native</option><option value=\'"Helvetica Neue", Helvetica, Arial, sans-serif\'>Helvetica Neue</option><option value=\'Arial, Helvetica, sans-serif\'>Arial</option><option value=\'"SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif\'>SF Pro</option><option value=\'"Segoe UI", Tahoma, Geneva, Verdana, sans-serif\'>Segoe UI</option><option value=\'"Roboto", "Helvetica Neue", Arial, sans-serif\'>Roboto</option><option value=\'"Open Sans", "Helvetica Neue", Arial, sans-serif\'>Open Sans</option><option value=\'"Lato", "Helvetica Neue", Arial, sans-serif\'>Lato</option><option value=\'"Source Sans 3", "Helvetica Neue", Arial, sans-serif\'>Source Sans 3</option><option value=\'"Nunito", "Helvetica Neue", Arial, sans-serif\'>Nunito</option><option value=\'"Poppins", "Helvetica Neue", Arial, sans-serif\'>Poppins</option><option value=\'"DM Sans", "Helvetica Neue", Arial, sans-serif\'>DM Sans</option><option value=\'"Plus Jakarta Sans", "Inter", sans-serif\'>Plus Jakarta Sans</option><option value=\'"Manrope", "Inter", sans-serif\'>Manrope</option><option value=\'"Space Grotesk", "Inter", sans-serif\'>Space Grotesk</option><option value=\'"Outfit", "Inter", sans-serif\'>Outfit</option><option value=\'"Figtree", "Inter", sans-serif\'>Figtree</option></optgroup><optgroup label="Serif"><option value=\'Georgia, Cambria, serif\'>Georgia</option><option value=\'"Times New Roman", Times, serif\'>Times New Roman</option><option value=\'"Palatino Linotype", Palatino, "Book Antiqua", serif\'>Palatino</option><option value=\'"Libre Baskerville", Georgia, serif\'>Libre Baskerville</option><option value=\'"Playfair Display", Georgia, serif\'>Playfair Display</option><option value=\'"Merriweather", Georgia, serif\'>Merriweather</option><option value=\'"Lora", Georgia, serif\'>Lora</option><option value=\'"Crimson Text", Georgia, serif\'>Crimson Text</option></optgroup><optgroup label="Monospace"><option value=\'"JetBrains Mono", "Fira Code", ui-monospace, monospace\'>JetBrains Mono</option><option value=\'"Fira Code", "JetBrains Mono", ui-monospace, monospace\'>Fira Code</option><option value=\'"Source Code Pro", ui-monospace, monospace\'>Source Code Pro</option><option value=\'"IBM Plex Mono", ui-monospace, monospace\'>IBM Plex Mono</option><option value=\'"Cascadia Code", "Fira Code", ui-monospace, monospace\'>Cascadia Code</option><option value=\'Monaco, Consolas, ui-monospace, monospace\'>Monaco</option><option value=\'Menlo, Monaco, "Courier New", monospace\'>Menlo</option></optgroup></select></div>';
+            body.appendChild(fontRow);
+        } else {
+            var keys = Object.keys(section.vars);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var val = themeVars[key] || section.vars[key];
+                var row = document.createElement('div');
+                row.className = 'editor-row';
+                row.innerHTML = '<div class="swatch-wrap"><div class="swatch" id="sw-' + key + '" style="background:' + val + ';"></div><input type="color" class="swatch-input" value="' + val + '" oninput="updateVar(\'' + key + '\',this.value)"></div><div style="flex:1;min-width:0;"><div class="var-label">' + key.replace('--','').replace(/-/g,' ') + '</div><input type="text" class="var-value" value="' + val + '" id="tv-' + key + '" oninput="updateVar(\'' + key + '\',this.value)"></div>';
+                body.appendChild(row);
+            }
+        }
+        wrapper.appendChild(body);
+        container.appendChild(wrapper);
+    });
+}
+
+function updateVar(name, value) {
+    document.documentElement.style.setProperty(name, value);
+    themeVars[name] = value;
+    var sw = document.getElementById('sw-' + name);
+    var tv = document.getElementById('tv-' + name);
+    if (sw) sw.style.background = value;
+    if (tv) tv.value = value;
+    autosave();
+}
+
+function changeFont(value) {
+    currentFont = value;
+    document.documentElement.style.setProperty('--font-family-base', value);
+    document.documentElement.style.setProperty('--font-family-heading', value);
+    autosave();
+}
+
+function toggleSection(id) {
+    var body = document.getElementById('body-' + id);
+    var chevron = document.getElementById('chevron-' + id);
+    body.classList.toggle('collapsed');
+    chevron.style.transform = body.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+}
+
+function exportTheme() {
+    var timestamp = new Date().toISOString().slice(0, 10);
+    var themeName = prompt('Theme name:', 'Custom Theme ' + timestamp) || ('Custom Theme ' + timestamp);
+    var safeName = themeName.replace(/[^a-zA-Z0-9 _\-().]/g, '').trim();
+    var css = '/* ' + safeName + ' — LLM Benchmark Dashboard */\n:root {\n\n';
+    css += '  /* Fonts */\n';
+    css += '  --font-family-base:          ' + currentFont + ';\n';
+    css += '  --font-family-mono:          "JetBrains Mono", "Fira Code", ui-monospace, monospace;\n';
+    css += '  --font-family-heading:       var(--font-family-base);\n\n';
+    SECTIONS.forEach(function(section) {
+        if (!section.vars) return;
+        css += '  /* ' + section.label + ' */\n';
+        var keys = Object.keys(section.vars);
+        for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            var v = themeVars[k] || section.vars[k];
+            var padded = k;
+            while (padded.length < 30) padded += ' ';
+            css += '  ' + padded + ': ' + v + ';\n';
+        }
+        css += '\n';
+    });
+    css += '  /* Layout */\n';
+    css += '  --card-shadow:               0 10px 30px rgba(15, 23, 42, 0.08);\n';
+    css += '  --card-radius:               1.25rem;\n';
+    css += '  --btn-radius:                0.75rem;\n';
+    css += '  --scorebar-height:           0.625rem;\n';
+    css += '  --table-top3-bg:             rgba(248, 250, 252, 0.6);\n';
+    css += '  --table-model-text:          var(--page-text);\n';
+    css += '}\n';
+    var blob = new Blob([css], {type:'text/css'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.css';
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function importTheme() { document.getElementById('import-input').click(); }
+
+function handleImport(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var css = e.target.result;
+        var regex = /--([\w-]+)\s*:\s*([^;]+)/g;
+        var match;
+        while ((match = regex.exec(css)) !== null) {
+            var key = '--' + match[1];
+            var value = match[2].trim();
+            if (key === '--font-family-base') {
+                currentFont = value;
+                document.documentElement.style.setProperty('--font-family-base', value);
+                document.documentElement.style.setProperty('--font-family-heading', value);
+            } else if (themeVars.hasOwnProperty(key)) {
+                themeVars[key] = value;
+                document.documentElement.style.setProperty(key, value);
+            }
+        }
+        buildControls();
+        syncFontSelect();
+        autosave();
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function resetToDefaults() {
+    if (!confirm('Reset all colors to defaults?')) return;
+    themeVars = JSON.parse(JSON.stringify(DEFAULTS));
+    currentFont = '"Inter", system-ui, -apple-system, sans-serif';
+    var keys = Object.keys(DEFAULTS);
+    for (var i = 0; i < keys.length; i++) { document.documentElement.style.setProperty(keys[i], DEFAULTS[keys[i]]); }
+    document.documentElement.style.setProperty('--font-family-base', currentFont);
+    document.documentElement.style.setProperty('--font-family-heading', currentFont);
+    buildControls();
+    syncFontSelect();
+    autosave();
+}
+
+function autosave() {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ vars: themeVars, font: currentFont })); } catch(e) {}
+}
+
+function restoreAutosave() {
+    try {
+        var saved = localStorage.getItem(AUTOSAVE_KEY);
+        if (!saved) return;
+        var data = JSON.parse(saved);
+        if (data.vars) {
+            themeVars = JSON.parse(JSON.stringify(DEFAULTS));
+            var keys = Object.keys(data.vars);
+            for (var i = 0; i < keys.length; i++) {
+                if (DEFAULTS.hasOwnProperty(keys[i])) {
+                    themeVars[keys[i]] = data.vars[keys[i]];
+                }
+            }
+            var allKeys = Object.keys(themeVars);
+            for (var j = 0; j < allKeys.length; j++) { document.documentElement.style.setProperty(allKeys[j], themeVars[allKeys[j]]); }
+        }
+        if (data.font) {
+            currentFont = data.font;
+            document.documentElement.style.setProperty('--font-family-base', currentFont);
+            document.documentElement.style.setProperty('--font-family-heading', currentFont);
+        }
+    } catch(e) {}
+}
+
+function clearAutosave() {
+    if (!confirm('Clear saved state? This will not reset current values.')) return;
+    localStorage.removeItem(AUTOSAVE_KEY);
+}
+
+function syncFontSelect() {
+    setTimeout(function() {
+        var select = document.getElementById('font-select');
+        if (!select) return;
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === currentFont) { select.selectedIndex = i; break; }
+        }
+    }, 50);
+}
+
+restoreAutosave();
+buildControls();
+syncFontSelect();
+</script>
+</body>
+</html>

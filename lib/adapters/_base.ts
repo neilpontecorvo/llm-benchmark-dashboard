@@ -1,6 +1,6 @@
 import { mockResultsForBenchmark } from "@/lib/mock-data";
 import { normalizeScores } from "@/lib/scoring/normalize";
-import { BenchmarkAdapter, BenchmarkResult } from "@/lib/types";
+import type { BenchmarkAdapter, BenchmarkResult } from "@/lib/types";
 
 export abstract class BaseAdapter implements BenchmarkAdapter {
   abstract key: BenchmarkAdapter["key"];
@@ -14,6 +14,10 @@ export abstract class BaseAdapter implements BenchmarkAdapter {
       return normalizeScores(mockResultsForBenchmark(this, limit));
     }
     return this.fetchLive(limit);
+  }
+
+  protected normalizeLiveRows(rows: BenchmarkResult[]): BenchmarkResult[] {
+    return normalizeScores(rows);
   }
 
   protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {

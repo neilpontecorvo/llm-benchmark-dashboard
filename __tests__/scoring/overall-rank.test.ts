@@ -106,7 +106,7 @@ describe("buildOverallTop3", () => {
     expect(top3[0].includedBenchmarks).toContain("arena_text");
   });
 
-  it("excludes results with includedInOverall = false", () => {
+  it("excludes results with includedInOverall = false (visual benchmarks)", () => {
     const results: BenchmarkResult[] = [
       makeResult({
         id: "a1",
@@ -114,14 +114,30 @@ describe("buildOverallTop3", () => {
         normalizedScore: 100,
         includedInOverall: true,
       }),
-      // HF Open LLM excluded
+      // Visual benchmark model excluded via includedInOverall = false
       makeResult({
         id: "b1",
-        modelName: "Model B",
-        benchmarkKey: "hf_open_llm",
+        modelName: "Video Model",
+        benchmarkKey: "arena_text_to_image",
         normalizedScore: 100,
         includedInOverall: false,
-        category: "open_only",
+        category: "text_to_image",
+      }),
+      makeResult({
+        id: "b2",
+        modelName: "Video Model",
+        benchmarkKey: "arena_text_to_video",
+        normalizedScore: 100,
+        includedInOverall: false,
+        category: "text_to_video",
+      }),
+      makeResult({
+        id: "b3",
+        modelName: "Video Model",
+        benchmarkKey: "arena_image_to_video",
+        normalizedScore: 100,
+        includedInOverall: false,
+        category: "image_to_video",
       }),
     ];
 
@@ -175,6 +191,32 @@ describe("buildOverallTop3", () => {
     // Model B has 50 * 0.10 = 5 weighted score
     // Model A has 100 * 0 = 0 weighted score
     expect(top3[0].modelName).toBe("Model B");
+  });
+
+  it("visual benchmarks have weight 0 so they contribute nothing even if included", () => {
+    const results: BenchmarkResult[] = [
+      // Even if somehow includedInOverall is true, weight is 0
+      makeResult({
+        id: "a1",
+        modelName: "Video Model",
+        benchmarkKey: "arena_text_to_image",
+        normalizedScore: 100,
+        includedInOverall: true,
+        category: "text_to_image",
+      }),
+      makeResult({
+        id: "b1",
+        modelName: "LLM Model",
+        benchmarkKey: "swe_bench_verified",
+        normalizedScore: 50,
+      }),
+    ];
+
+    const top3 = buildOverallTop3(results);
+
+    // LLM Model: 50 * 0.10 = 5
+    // Video Model: 100 * 0 = 0
+    expect(top3[0].modelName).toBe("LLM Model");
   });
 
   it("breaks ties by appearance count then alphabetically", () => {

@@ -64,8 +64,8 @@ export default async function ExportReportPage() {
           <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Overall Top 3</h2>
           <p style={{ maxWidth: 420, fontSize: 12, lineHeight: 1.5, color: "#64748b", margin: 0 }}>
             Each benchmark is normalized to a 0-100 scale, then weighted by importance.
-            The overall score is the sum of weighted normalized scores across all benchmarks
-            a model appears in. Higher is better.
+            The overall score is the sum of weighted normalized scores across text and
+            reasoning benchmarks. Visual benchmarks are scored separately. Higher is better.
           </p>
         </div>
 

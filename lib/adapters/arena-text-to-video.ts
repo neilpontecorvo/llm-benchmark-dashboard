@@ -24,7 +24,7 @@ export class ArenaTextToVideoAdapter extends BaseAdapter {
   key = "arena_text_to_video" as const;
   displayName = "Arena Text to Video";
   sourceUrl = "https://arena.ai/leaderboard";
-  includedInOverall = true;
+  includedInOverall = false;
 
   protected shouldUseMock(): boolean {
     if (process.env.USE_MOCK_DATA !== "false") return true;

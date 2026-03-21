@@ -46,9 +46,8 @@ export function OverallTop3({ data }: { data: OverallResult[] }) {
         <h2 className="text-lg font-semibold font-heading">Overall Top 3</h2>
         <p className="max-w-xl text-sm leading-relaxed" style={{ color: "var(--page-text-muted)" }}>
           Each benchmark is normalized to a 0-100 scale, then weighted by importance.
-          The overall score is the sum of weighted normalized scores across all benchmarks
-          a model appears in. Higher is better. Models appearing in more benchmarks have
-          more opportunity to accumulate score.
+          The overall score is the sum of weighted normalized scores across text and
+          reasoning benchmarks. Visual benchmarks are scored separately. Higher is better.
         </p>
       </div>
       <div className="mt-4 grid gap-3 sm:gap-4 lg:grid-cols-3">

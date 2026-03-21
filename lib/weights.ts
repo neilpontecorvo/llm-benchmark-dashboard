@@ -1,18 +1,18 @@
 import { BenchmarkCategory, BenchmarkKey } from "@/lib/types";
 
 export const BENCHMARK_WEIGHTS: Record<BenchmarkKey, number> = {
-  artificial_analysis: 0.15,
-  arena_text: 0.12,
-  livebench: 0.10,
-  swe_bench_verified: 0.10,
-  aider_polyglot: 0.05,
+  artificial_analysis: 0.20,
+  arena_text: 0.15,
+  livebench: 0.13,
+  swe_bench_verified: 0.13,
+  aider_polyglot: 0.07,
   hf_open_llm: 0,
-  arena_text_to_image: 0.08,
-  arena_text_to_video: 0.08,
-  arena_image_to_video: 0.07,
-  gpqa_diamond: 0.10,
-  humanitys_last_exam: 0.10,
-  mmmlu: 0.05
+  arena_text_to_image: 0,
+  arena_text_to_video: 0,
+  arena_image_to_video: 0,
+  gpqa_diamond: 0.13,
+  humanitys_last_exam: 0.13,
+  mmmlu: 0.06
 };
 
 export const BENCHMARK_NAMES: Record<BenchmarkKey, string> = {

@@ -24,7 +24,7 @@ export class ArenaImageToVideoAdapter extends BaseAdapter {
   key = "arena_image_to_video" as const;
   displayName = "Arena Image to Video";
   sourceUrl = "https://arena.ai/leaderboard";
-  includedInOverall = true;
+  includedInOverall = false;
 
   protected shouldUseMock(): boolean {
     if (process.env.USE_MOCK_DATA !== "false") return true;

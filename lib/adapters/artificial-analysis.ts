@@ -60,6 +60,11 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
     );
   }
 
+  protected shouldUseMock(): boolean {
+    if (process.env.USE_MOCK_DATA !== "false") return true;
+    return process.env.USE_LIVE_ARTIFICIAL_ANALYSIS === "true" ? false : true;
+  }
+
   private parseLeaderboard(html: string): ParsedRow[] {
     const text = html
       .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -72,7 +77,7 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
     const candidates: ParsedRow[] = [];
     const seen = new Set<string>();
 
-    const scorePattern = /(\d{1,3})\.\s+([A-Za-z0-9][A-Za-z0-9 .:+\-_/()]+?)\s+\((\d+(?:\.\d+)?)\)/g;
+    const scorePattern = /(\d{1,3})\.\s+([A-Za-z0-9][A-Za-z0-9 .:+\-_/()]+?)\s+(\d+(?:\.\d+)?)/g;
     let match: RegExpExecArray | null;
 
     while ((match = scorePattern.exec(text)) !== null) {

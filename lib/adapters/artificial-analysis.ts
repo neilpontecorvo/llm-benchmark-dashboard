@@ -8,9 +8,7 @@ type ParsedRow = {
   rawScore: number | null;
   rawScoreText?: string | null;
 };
-if (rows.length < 10) {
-  throw new Error(`Artificial Analysis parser returned only ${rows.length} rows; expected at least 10`);
-}
+
 export class ArtificialAnalysisAdapter extends BaseAdapter {
   key = "artificial_analysis" as const;
   displayName = "Artificial Analysis Intelligence Index";
@@ -37,6 +35,10 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
       throw new Error("Artificial Analysis parser returned zero rows");
     }
 
+    if (rows.length < 10) {
+      throw new Error(`Artificial Analysis parser returned only ${rows.length} rows; expected at least 10`);
+    }
+
     const fetchedAt = new Date().toISOString();
 
     return this.normalizeLiveRows(
@@ -57,9 +59,7 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
       }))
     );
   }
-if (rows.length < 10) {
-  throw new Error(`Artificial Analysis parser returned only ${rows.length} rows; expected at least 10`);
-}
+
   private parseLeaderboard(html: string): ParsedRow[] {
     const text = html
       .replace(/<script[\s\S]*?<\/script>/gi, " ")

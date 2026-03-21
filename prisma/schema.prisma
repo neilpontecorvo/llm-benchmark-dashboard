@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model BenchmarkSnapshot {
+  id           String   @id @default(cuid())
+  benchmarkKey String
+  fetchedAt    DateTime
+  sourceUrl    String
+  sourceData   Json
+  createdAt    DateTime @default(now())
+}
+
+model BenchmarkResult {
+  id               String   @id
+  benchmarkKey     String
+  fetchedAt        DateTime
+  modelName        String
+  provider         String?
+  rank             Int?
+  rawScore         Float?
+  rawScoreText     String?
+  normalizedScore  Float?
+  confidenceText   String?
+  category         String
+  sourceUrl        String
+  includedInOverall Boolean
+}
+
+model OverallResult {
+  id                 String   @id
+  fetchedAt          DateTime
+  modelName          String
+  provider           String?
+  includedBenchmarks Json
+  weightedScore      Float
+  appearanceCount    Int
+  overallRank        Int
+}
+
+model RefreshRun {
+  id                  String   @id @default(cuid())
+  startedAt           DateTime
+  completedAt         DateTime?
+  status              String
+  benchmarksAttempted Json
+  benchmarksSucceeded Json
+  errorSummary        String?
+}

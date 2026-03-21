@@ -1,0 +1,237 @@
+diff --git a/tsconfig.json b/tsconfig.json
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@
+   "compilerOptions": {
++    "baseUrl": ".",
+     "target": "ES2022",
+@@
+ diff --git a/lib/db.ts b/lib/db.ts
+--- a/lib/db.ts
++++ b/lib/db.ts
+@@
+ import { PrismaClient } from "@prisma/client";
+ 
+ declare global {
+   var prisma: PrismaClient | undefined;
+ }
+ 
+-export const prisma = global.prisma ?? new PrismaClient();
++function getDatabaseUrl() {
++  const value = process.env.DATABASE_URL;
++  if (!value) {
++    throw new Error("DATABASE_URL is not set. Copy .env.example to .env and set DATABASE_URL before running the app.");
++  }
++  return value;
++}
++
++export const prisma =
++  global.prisma ??
++  new PrismaClient({
++    datasourceUrl: getDatabaseUrl()
++  });
++
+ if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+
+ diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@
+   "scripts": {
+@@
+     "export:install": "playwright install"
+   },
++  "prisma": {
++    "seed": "tsx scripts/seed.ts"
++  },
+   "dependencies": {
+@@
+ diff --git a/scripts/test-refresh.ts b/scripts/test-refresh.ts
+--- a/scripts/test-refresh.ts
++++ b/scripts/test-refresh.ts
+@@
++import { prisma } from "@/lib/db";
+ import { runRefresh } from "@/lib/refresh";
+ 
+ runRefresh(10)
+   .then((result) => console.log(JSON.stringify(result, null, 2)))
+   .catch((error) => {
+     console.error(error);
+     process.exit(1);
+-  });
++  })
++  .finally(async () => {
++    await prisma.$disconnect();
++  });
+
+ diff --git a/lib/export.ts b/lib/export.ts
+--- a/lib/export.ts
++++ b/lib/export.ts
+@@
+ import fs from "node:fs/promises";
+ import path from "node:path";
+ import { chromium } from "playwright";
+@@
+ function stamp() {
+   return new Date().toISOString().replace(/[:]/g, "-");
+ }
++
++function getAppUrl() {
++  const raw = process.env.APP_URL ?? "http://localhost:3000";
++  const url = new URL(raw);
++  return url.toString().replace(/\/$/, "");
++}
+@@
+ export async function generatePdf() {
+   const browser = await chromium.launch({ headless: true });
+   try {
+     const page = await browser.newPage();
+-    await page.goto(`${process.env.APP_URL ?? "http://localhost:3000"}/export/report`, { waitUntil: "networkidle" });
++    await page.goto(`${getAppUrl()}/export/report`, {
++      waitUntil: "networkidle",
++      timeout: 45000
++    });
+@@
+ export async function generatePng() {
+   const browser = await chromium.launch({ headless: true });
+   try {
+     const page = await browser.newPage({ viewport: { width: 1440, height: 2200 } });
+-    await page.goto(`${process.env.APP_URL ?? "http://localhost:3000"}/export/report`, { waitUntil: "networkidle" });
++    await page.goto(`${getAppUrl()}/export/report`, {
++      waitUntil: "networkidle",
++      timeout: 45000
++    });
+@@
+ diff --git a/app/api/benchmarks/route.ts b/app/api/benchmarks/route.ts
+--- a/app/api/benchmarks/route.ts
++++ b/app/api/benchmarks/route.ts
+@@
+ import { NextResponse } from "next/server";
+ import { getDashboardData } from "@/lib/refresh";
++
++export const runtime = "nodejs";
++export const dynamic = "force-dynamic";
+ 
+ export async function GET() {
+-  const data = await getDashboardData();
+-  return NextResponse.json(data);
++  try {
++    const data = await getDashboardData();
++    return NextResponse.json(data);
++  } catch (error) {
++    return NextResponse.json(
++      { error: error instanceof Error ? error.message : "Failed to load benchmark data" },
++      { status: 500 }
++    );
++  }
+ }
+
+ diff --git a/app/api/refresh/route.ts b/app/api/refresh/route.ts
+--- a/app/api/refresh/route.ts
++++ b/app/api/refresh/route.ts
+@@
+ import { NextResponse } from "next/server";
+ import { runRefresh } from "@/lib/refresh";
++
++export const runtime = "nodejs";
++export const dynamic = "force-dynamic";
+ 
+ export async function POST() {
+-  const result = await runRefresh(10);
+-  return NextResponse.json(result);
++  try {
++    const result = await runRefresh(10);
++    return NextResponse.json(result);
++  } catch (error) {
++    return NextResponse.json(
++      { error: error instanceof Error ? error.message : "Refresh failed" },
++      { status: 500 }
++    );
++  }
+ }
+
+ diff --git a/app/api/export/pdf/route.ts b/app/api/export/pdf/route.ts
+--- a/app/api/export/pdf/route.ts
++++ b/app/api/export/pdf/route.ts
+@@
+ import fs from "node:fs/promises";
+ import { NextResponse } from "next/server";
+ import { generatePdf } from "@/lib/export";
++
++export const runtime = "nodejs";
++export const dynamic = "force-dynamic";
+ 
+ export async function GET() {
+-  const filePath = await generatePdf();
+-  const buffer = await fs.readFile(filePath);
+-  return new NextResponse(buffer, {
+-    headers: {
+-      "Content-Type": "application/pdf",
+-      "Content-Disposition": `attachment; filename="${filePath.split("/").pop()}"`
+-    }
+-  });
++  try {
++    const filePath = await generatePdf();
++    const buffer = await fs.readFile(filePath);
++    return new NextResponse(buffer, {
++      headers: {
++        "Content-Type": "application/pdf",
++        "Content-Disposition": `attachment; filename="${filePath.split("/").pop()}"`
++      }
++    });
++  } catch (error) {
++    return NextResponse.json(
++      { error: error instanceof Error ? error.message : "PDF export failed" },
++      { status: 500 }
++    );
++  }
+ }
+
+ diff --git a/app/api/export/png/route.ts b/app/api/export/png/route.ts
+--- a/app/api/export/png/route.ts
++++ b/app/api/export/png/route.ts
+@@
+ import fs from "node:fs/promises";
+ import { NextResponse } from "next/server";
+ import { generatePng } from "@/lib/export";
++
++export const runtime = "nodejs";
++export const dynamic = "force-dynamic";
+ 
+ export async function GET() {
+-  const filePath = await generatePng();
+-  const buffer = await fs.readFile(filePath);
+-  return new NextResponse(buffer, {
+-    headers: {
+-      "Content-Type": "image/png",
+-      "Content-Disposition": `attachment; filename="${filePath.split("/").pop()}"`
+-    }
+-  });
++  try {
++    const filePath = await generatePng();
++    const buffer = await fs.readFile(filePath);
++    return new NextResponse(buffer, {
++      headers: {
++        "Content-Type": "image/png",
++        "Content-Disposition": `attachment; filename="${filePath.split("/").pop()}"`
++      }
++    });
++  } catch (error) {
++    return NextResponse.json(
++      { error: error instanceof Error ? error.message : "PNG export failed" },
++      { status: 500 }
++    );
++  }
+ }
+
+ diff --git a/app/export/report/page.tsx b/app/export/report/page.tsx
+--- a/app/export/report/page.tsx
++++ b/app/export/report/page.tsx
+@@
+ import { getDashboardData } from "@/lib/refresh";
+ import { BENCHMARK_NAMES } from "@/lib/weights";
+ import { adapters } from "@/lib/adapters";
++
++export const dynamic = "force-dynamic";
+ 
+ export default async function ExportReportPage() {

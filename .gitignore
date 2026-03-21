@@ -13,3 +13,4 @@ exports
 .claude/
 tsconfig.tsbuildinfo
 Master Project Prompt.md
+.DS_Store

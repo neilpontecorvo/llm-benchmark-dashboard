@@ -30,7 +30,7 @@ This file documents the implementation phases, their current status, and remaini
 | 3 | SWE-bench Verified | GitHub JSON (`leaderboards.json`) | Live |
 | 4 | Aider Polyglot | GitHub YAML (`polyglot_leaderboard.yml`) | Live |
 | 5 | HF Open LLM | HF datasets-server rows API | Live (⚠️ retired) |
-| 6 | LiveBench | Seed (official repo exists for scripted ingestion) | Seed |
+| 6 | LiveBench | HF parquet (`livebench/model_judgment`) + seed fallback | Live (HF, no auth) |
 | 7 | Arena Text to Image | LMArena catalog JSON + seed fallback | Live |
 | 8 | Arena Text to Video | AA API v2 media endpoint + seed fallback | Live (needs API key) |
 | 9 | Arena Image to Video | AA API v2 media endpoint + seed fallback | Live (needs API key) |
@@ -50,7 +50,7 @@ This file documents the implementation phases, their current status, and remaini
 - **GPQA Diamond**: Now live via AA API v2 `evaluations.gpqa` field. 420 models. Scores are decimals (0-1) converted to percentages.
 - **Humanity's Last Exam**: Now live via AA API v2 `evaluations.hle` (416 models). Falls back to Scale Labs HTML scraping, then seed.
 - **MMMLU**: Now live via AA API v2 `evaluations.mmlu_pro` field. 344 models. Scores are decimals (0-1) converted to percentages.
-- **LiveBench**: Still seed-only. HuggingFace datasets API available for future integration (no auth needed).
+- **LiveBench**: Now live via HuggingFace parquet (`livebench/model_judgment`). Fetches 60K per-question judgments, aggregates using category-balanced averaging. Falls back to seed when HF data doesn't include target models. Uses `hyparquet` (zero-dep parquet reader).
 
 ## Phase 3 — Refresh pipeline [COMPLETE]
 1. ~~Add per-adapter execution wrapper.~~
@@ -90,12 +90,13 @@ This file documents the implementation phases, their current status, and remaini
 6. ~~Export filename includes ISO timestamp (already working).~~
 
 ## Phase 7 — Testing [COMPLETE]
-174 tests passing across 5 suites:
+181 tests passing across 6 suites:
 - [x] Normalization tests (7 tests)
 - [x] Overall ranking tests (8 tests)
 - [x] Weights validation tests (8 tests)
 - [x] Contract tests for all 12 adapters (139 tests)
 - [x] Environment validation tests (4 tests)
+- [x] fetchWithRetry tests (7 tests) — retry on 5xx/429, bail on 4xx, timeout, backoff, exhaustion
 - [ ] Refresh route integration test (deferred — requires running server)
 - [ ] Export route smoke test (deferred — requires Playwright)
 
@@ -106,8 +107,6 @@ This file documents the implementation phases, their current status, and remaini
 4. [ ] Add scheduled refresh support (cron or external trigger).
 
 ## Remaining improvement targets
-- Retry/backoff policy for live fetches
-- LiveBench live ingestion via official repo/HF script pipeline
-- Arena Text-to-Video / Image-to-Video live JSON (when available)
+- Last-known-good data fallback on fetch failure
 - Historical score tracking and trend visualization
 - Model comparison view

@@ -8,10 +8,10 @@ You are continuing implementation of the `llm-benchmark-dashboard` repository.
 
 ## Current state
 
-The dashboard is functional with 12 benchmark adapters (10 live-capable via AA API), a working refresh pipeline, comprehensive UI with theme system, PDF/PNG export with full feature parity, and 174 passing tests. The core architecture is complete — remaining work is resilience hardening and deployment.
+The dashboard is functional with 12 benchmark adapters (11 live-capable via AA API + HuggingFace), a working refresh pipeline, comprehensive UI with theme system and model card links, PDF/PNG export with full feature parity, retry/backoff on all live fetches, and 181 passing tests. The core architecture is complete — remaining work is deployment.
 
 ### What is built
-- 12 benchmark adapters (10 live-capable, 1 seed, 1 retired)
+- 12 benchmark adapters (11 live-capable, 0 seed-only, 1 retired)
 - Refresh pipeline with per-adapter error handling and partial success
 - Prisma + SQLite with `dataSource` tracking
 - Dashboard UI with category badges, live/mock indicators, weight labels, heat-gradient score bars, strength tags, benchmark descriptions
@@ -21,11 +21,9 @@ The dashboard is functional with 12 benchmark adapters (10 live-capable via AA A
 - PDF and PNG export routes via Playwright with full feature parity
 - Selective live/mock rollout via per-adapter env flags
 - Environment validation via Next.js instrumentation hook
-- 174 tests across 5 suites (normalization, ranking, weights, adapter contracts, env validation)
+- 181 tests across 6 suites (normalization, ranking, weights, adapter contracts, env validation, fetchWithRetry)
 
 ### What still needs work
-- Retry/backoff for live fetches
-- Request timeout per adapter
 - Last-known-good data fallback on fetch failure
 - Deployment config (Vercel or Docker)
 - Scheduled refresh support (cron endpoint)
@@ -44,7 +42,7 @@ The dashboard is functional with 12 benchmark adapters (10 live-capable via AA A
 ### Included in overall ranking (weight > 0)
 - Artificial Analysis (20%) — general — AA API v2 (`x-api-key`) + seed fallback
 - Arena Text (15%) — community preference — LMArena catalog JSON + seed fallback
-- LiveBench (13%) — general — seed only (HuggingFace planned)
+- LiveBench (13%) — general — HF parquet (`livebench/model_judgment`) + seed fallback
 - SWE-bench Verified (13%) — coding — live GitHub JSON
 - GPQA Diamond (13%) — reasoning — AA API v2 `evaluations.gpqa` + seed fallback
 - Humanity's Last Exam (13%) — reasoning — AA API v2 `evaluations.hle` → Scale Labs HTML → seed
@@ -58,13 +56,10 @@ The dashboard is functional with 12 benchmark adapters (10 live-capable via AA A
 - Hugging Face Open LLM — open-only cohort — live but retired 2025-03-13
 
 ## Priority order for remaining work
-1. Add retry/backoff wrapper for live fetch failures.
-2. Add request timeout per adapter.
-3. Add last-known-good fallback (serve stale data on failure).
-4. Add health check endpoint (`/api/health`).
-5. Add deployment config (Vercel or Docker).
-6. Add scheduled refresh support.
-7. Explore LiveBench live data source (official repo/HF script pipeline).
+1. Add last-known-good fallback (serve stale data on failure).
+2. Add health check endpoint (`/api/health`).
+3. Add deployment config (Vercel or Docker).
+4. Add scheduled refresh support.
 
 ## Required behaviors
 - Manual refresh button triggers full pipeline.
@@ -84,8 +79,8 @@ The dashboard is functional with 12 benchmark adapters (10 live-capable via AA A
 - `dataSource` field flows from adapter through DB to UI.
 
 ## Deliverables expected
-- [ ] Retry/backoff policy for live fetches
-- [ ] Request timeout per adapter
+- [x] Retry/backoff policy for live fetches (done — `lib/fetch-with-retry.ts`)
+- [x] Request timeout per adapter (done — 10–15s via AbortController)
 - [ ] Last-known-good data fallback
 - [ ] Health check endpoint
 - [ ] Deployment configuration

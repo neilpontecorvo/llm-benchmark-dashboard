@@ -25,18 +25,18 @@ Use this checklist to verify project state before handing implementation to Code
 - [x] Every adapter preserves source URL and fetch timestamp.
 - [x] Every adapter can fail without crashing the refresh pipeline.
 - [x] `dataSource` field tracks live vs mock through DB to UI.
-- [x] 10 adapters are live-capable with seed fallbacks (AA API key unlocks 6).
+- [x] 11 adapters are live-capable with seed fallbacks (AA API key unlocks 6, HF parquet for LiveBench).
 - [ ] Last-known-good data policy is documented (not yet implemented).
 
 ## Implementation phases completed
 - [x] Phase 0: Baseline verification — app boots, refresh works, export stubs exist.
 - [x] Phase 1: Data contracts — types, normalization, weights locked.
-- [x] Phase 2: Live adapters — 10 live-capable (AA, Arena Text, Arena T2I, Arena T2V, Arena I2V, GPQA, HLE, MMMLU, SWE-bench, Aider, HF), 1 seed, 1 retired.
+- [x] Phase 2: Live adapters — 11 live-capable (AA, Arena Text, Arena T2I, Arena T2V, Arena I2V, GPQA, HLE, MMMLU, SWE-bench, Aider, LiveBench, HF), 0 seed-only, 1 retired.
 - [x] Phase 3: Refresh pipeline — per-adapter error handling, partial success.
 - [x] Phase 4: Scoring and ranking — normalization to 0-100, weighted overall top 3.
 - [x] Phase 5: UI hardening — badges, score bars, heat gradients, strength tags, descriptions, theme system.
 - [x] Phase 6: Export completion — PDF/PNG routes, print CSS, full feature parity with dashboard.
-- [x] Phase 7: Testing — 174 tests across 5 suites, all passing.
+- [x] Phase 7: Testing — 181 tests across 6 suites, all passing.
 - [ ] Phase 8: Deployment — no production config yet.
 
 ## Acceptance checks
@@ -48,15 +48,15 @@ Use this checklist to verify project state before handing implementation to Code
 - [x] Dashboard renders with live and seed data.
 - [x] `npx tsc --noEmit` passes with zero errors.
 - [x] `npm run build` completes successfully.
-- [x] `npm test` runs 174 tests — all passing.
+- [x] `npm test` runs 181 tests — all passing.
 - [x] PDF and PNG export routes return files (Playwright dependency).
 - [x] Adapter contract tests pass (139 tests for all 12 adapters).
 
 ## Remaining work for Codex
-- [ ] Add retry/backoff wrapper for live fetch failures.
-- [ ] Add request timeout per adapter.
+- [x] Add retry/backoff wrapper for live fetch failures (done — `lib/fetch-with-retry.ts`).
+- [x] Add request timeout per adapter (done — 10–15s via AbortController).
+- [x] Wire LiveBench to HuggingFace datasets API (done — parquet + hyparquet).
 - [ ] Add last-known-good data fallback.
 - [ ] Add health check endpoint (`/api/health`).
 - [ ] Add deployment config (Vercel or Docker).
 - [ ] Add scheduled refresh support (cron endpoint).
-- [ ] Wire LiveBench to HuggingFace datasets API (no auth needed).

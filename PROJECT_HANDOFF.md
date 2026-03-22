@@ -6,14 +6,14 @@ Continue hardening and productionizing the existing dashboard without changing s
 
 ## Current state
 
-The repo is operational. Core dashboard behavior, scoring, UI, refresh, and export routes exist. Remaining work is refinement and hardening, not a rewrite.
+The repo is operational with 11 live-capable adapters, retry/backoff on all live fetches, 181 tests across 6 suites, model card URLs on Top 3, and PDF/PNG export with full feature parity. Remaining work is deployment.
 
 ## Do first
 
-1. Verify export layout with all 12 tables.
-2. Add fixture-based adapter tests.
-3. Add normalization and ranking unit tests.
-4. Add refresh/export smoke coverage.
+1. Add health check endpoint (`/api/health`).
+2. Add deployment config (Vercel or Docker).
+3. Add scheduled refresh support (cron endpoint).
+4. Add last-known-good data fallback.
 
 ## Preserve
 

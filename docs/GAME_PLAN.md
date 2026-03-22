@@ -1,29 +1,29 @@
 # Game Plan — Road to Production
 
-## Current Completion: ~95%
+## Current Completion: ~97%
 
 ### Breakdown by area
 
 | Area | Status | Weight | Score |
 |---|---|---|---|
 | Core architecture (types, DB, adapters) | Complete | 20% | 20/20 |
-| 12 benchmark adapters | 10 live-capable, 1 seed, 1 retired | 15% | 15/15 |
+| 12 benchmark adapters | 11 live-capable, 0 seed-only, 1 retired | 15% | 15/15 |
 | Refresh pipeline | Complete (per-adapter error isolation) | 10% | 10/10 |
 | Scoring & normalization | Complete (0-100 weighted) | 10% | 10/10 |
-| UI dashboard | Complete (theme system, heat bars, strengths, descriptions) | 15% | 15/15 |
+| UI dashboard | Complete (theme system, heat bars, strengths, model cards, descriptions) | 15% | 15/15 |
 | Export (PDF/PNG) | Complete (print CSS, viewport tuned) | 8% | 8/8 |
-| Testing | 174 tests passing (5 suites) | 12% | 10/12 |
+| Testing | 181 tests passing (6 suites) | 12% | 11/12 |
 | Deployment readiness | Not started | 5% | 0/5 |
-| Code hygiene | Clean (dead deps removed, env validation) | 5% | 5/5 |
-| **Total** | | **100%** | **93/100** |
+| Code hygiene | Clean (dead deps removed, env validation, retry/backoff) | 5% | 5/5 |
+| **Total** | | **100%** | **94/100** |
 
 ### What's working right now
 - `npm run dev` boots clean with env validation on startup
 - `npm run build` passes
-- `npm test` runs 174 tests across 5 suites — all passing
+- `npm test` runs 181 tests across 6 suites — all passing
 - `npx tsc --noEmit` passes zero errors
-- 10 adapters live-capable (AA, Arena Text, Arena T2I, Arena T2V, Arena I2V, GPQA, HLE, MMMLU, SWE-bench, Aider, HF)
-- 1 adapter seed-only (LiveBench — HuggingFace planned)
+- 11 adapters live-capable (AA, Arena Text, Arena T2I, Arena T2V, Arena I2V, GPQA, HLE, MMMLU, SWE-bench, Aider, LiveBench, HF)
+- 0 adapters seed-only
 - 1 adapter retired/archival (HF Open LLM)
 - AA API key unlocks 6 adapters (AA, GPQA, HLE, MMMLU, T2V, I2V) via `x-api-key` header
 - Visual benchmarks (T2I, T2V, I2V) excluded from overall ranking (weight 0)
@@ -69,11 +69,11 @@
 
 ## Remaining Work
 
-### Sprint 3: Resilience
+### Sprint 3: Resilience [MOSTLY COMPLETE]
 **Goal: Make live fetches robust**
 
-- [ ] Add retry/backoff wrapper for live adapter fetch calls
-- [ ] Add request timeout per adapter (prevent hanging)
+- [x] Add retry/backoff wrapper for live adapter fetch calls (`lib/fetch-with-retry.ts`)
+- [x] Add request timeout per adapter (10–15s via AbortController)
 - [ ] Add last-known-good fallback (serve stale data on fetch failure)
 
 ### Sprint 4: Deployment
@@ -86,12 +86,28 @@
 - [ ] Document deployment steps
 
 ### Future Enhancements (Post-Launch)
-- LiveBench live ingestion via HuggingFace datasets API (no auth needed)
 - Historical score tracking and trend visualization
 - Model comparison view
 
 ---
 
+### What was completed this session (2026-03-22)
+
+#### Sprint 3 (partial): Resilience
+- [x] `lib/fetch-with-retry.ts` — exponential backoff (3 attempts, 1s/2s/4s), per-request timeout (10–15s), retries on 429/5xx/network errors, immediate bail on 4xx
+- [x] All 9 live-fetching adapters wired to use `fetchWithRetry`
+- [x] 7 unit tests for retry utility (success, retry-then-succeed, non-retryable bail, exhaustion, timeout)
+
+#### LiveBench → HuggingFace
+- [x] LiveBench adapter now fetches parquet from HF `livebench/model_judgment` dataset (737KB, 60K rows)
+- [x] Category-balanced aggregation matching official LiveBench methodology
+- [x] Added `hyparquet` dependency (zero-dep, ~20KB parquet reader)
+- [x] Falls back to seed when HF data is stale or missing key models
+
+#### Model Card URLs
+- [x] Top 3 cards now link to official model cards (Gemini 3 → DeepMind, Claude Opus 4.6 → Anthropic, GPT-5.4 → OpenAI, Kimi K2 → NVIDIA)
+- [x] Links in both dashboard (`overall-top3.tsx`) and export (`export/report/page.tsx`)
+
 ## Next Action
 
-Sprint 3 (resilience) and Sprint 4 (deployment) remain. The app is functionally complete with 10 live-capable adapters, a comprehensive test suite, and clean builds. Deployment config is the main gap to production.
+Sprint 4 (deployment) is the main remaining gap. The app has 11 live-capable adapters, retry/backoff, 181 tests across 6 suites, and clean builds.

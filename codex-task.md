@@ -22,14 +22,14 @@ The core dashboard is functional with 12 benchmark adapters, a working refresh p
 | 1 | Artificial Analysis Intelligence Index | General | artificialanalysis.ai | Live (needs API key) / Seed | 20% |
 | 2 | LM Arena Text | Community Preference | LMArena catalog JSON | Live | 15% |
 | 3 | SWE-bench Verified | Coding | GitHub JSON | Live | 13% |
-| 4 | LiveBench | General | livebench.ai | Seed | 13% |
+| 4 | LiveBench | General | HF parquet (`livebench/model_judgment`) | Live (HF) / Seed | 13% |
 | 5 | GPQA Diamond | Reasoning | AA API v2 | Live (needs API key) / Seed | 13% |
-| 6 | Humanity's Last Exam | General | Scale Labs | Live (HTML parse) / Seed | 13% |
+| 6 | Humanity's Last Exam | General | AA API v2 → Scale Labs | Live (API primary) / Seed | 13% |
 | 7 | Aider Polyglot | Coding | GitHub YAML | Live | 7% |
-| 8 | MMMLU | Multilingual | Seed | Seed | 6% |
+| 8 | MMMLU | Multilingual | AA API v2 (`evaluations.mmlu_pro`) | Live (needs API key) / Seed | 6% |
 | 9 | Arena Text to Image | Text to Image | LMArena catalog JSON | Live | 0% (visual, excluded) |
-| 10 | Arena Text to Video | Text to Video | Seed | Seed | 0% (visual, excluded) |
-| 11 | Arena Image to Video | Image to Video | Seed | Seed | 0% (visual, excluded) |
+| 10 | Arena Text to Video | Text to Video | AA API v2 media | Live (needs API key) / Seed | 0% (visual, excluded) |
+| 11 | Arena Image to Video | Image to Video | AA API v2 media | Live (needs API key) / Seed | 0% (visual, excluded) |
 | 12 | HF Open LLM | Open-Only | HF datasets-server API | Live (retired) | 0% (excluded) |
 
 ## Remaining work — priority order
@@ -54,10 +54,8 @@ The core dashboard is functional with 12 benchmark adapters, a working refresh p
 - [ ] Add scheduled refresh support (cron or external trigger)
 
 ### Ongoing improvements
-- [ ] Add retry/backoff policy for live fetch failures
-- [ ] Explore LiveBench live data source (headless browser or API discovery)
-- [ ] Explore Arena multimodal live scraping when API becomes available
-- [ ] Monitor Vellum for expanded data beyond top 5
+- [x] ~~Add retry/backoff policy for live fetch failures~~ (done — `lib/fetch-with-retry.ts`)
+- [x] ~~Explore LiveBench live data source~~ (done — HF parquet)
 - [ ] Add historical score tracking and trend visualization
 - [ ] Add model comparison view
 
@@ -102,5 +100,5 @@ USE_LIVE_GPQA_DIAMOND="true"
 USE_LIVE_HUMANITYS_LAST_EXAM="true"
 USE_LIVE_MMMLU="true"
 USE_LIVE_LIVEBENCH="true"
-USE_LIVE_ARTIFICIAL_ANALYSIS="false"  # Blocked — no reliable structured source
+USE_LIVE_ARTIFICIAL_ANALYSIS="true"   # AA API v2 with x-api-key
 ```

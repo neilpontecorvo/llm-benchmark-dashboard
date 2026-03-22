@@ -49,7 +49,7 @@ Adapters operate in one of three modes:
 |---|---|---|---|---|---|
 | Artificial Analysis | `artificial_analysis` | general | Official API (v2) + seed fallback | Live (needs API key) | 20% |
 | LM Arena Text | `arena_text` | community_preference | LMArena catalog JSON + seed fallback | Live | 15% |
-| LiveBench | `livebench` | general | Seed (JS SPA, official repo exists) | Seed | 13% |
+| LiveBench | `livebench` | general | HF parquet (`livebench/model_judgment`) + seed fallback | Live (HF, no auth) | 13% |
 | HF Open LLM | `hf_open_llm` | open_only | HF datasets-server API | Live (⚠️ retired 2025-03-13) | 0% |
 
 ### Coding
@@ -90,6 +90,7 @@ Adapters operate in one of three modes:
 | MMMLU | `artificialanalysis.ai/api/v2/data/llms/models` (`evaluations.mmlu_pro`) | JSON API | `x-api-key` |
 | SWE-bench | `raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json` | JSON | None |
 | Aider | `raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml` | YAML | None |
+| LiveBench | `huggingface.co/api/datasets/livebench/model_judgment/parquet/default/leaderboard/0.parquet` | Parquet | None |
 | HF Open LLM | `datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard/contents` | JSON API | None |
 
 ## API keys
@@ -121,6 +122,15 @@ The `shouldUseMock()` method checks:
 3. Otherwise → call `fetchLive()`
 
 The `BaseAdapter.fetchTopResults()` automatically tags all results with `dataSource: "live" | "mock"`.
+
+## Retry and timeout policy
+
+All live adapters use `fetchWithRetry()` from `lib/fetch-with-retry.ts`:
+- **3 attempts** with exponential backoff (1s → 2s → 4s delay)
+- **Per-request timeout**: 10–15s depending on adapter (AA API gets 15s)
+- Retries on: 429 (rate limit), 5xx, network errors, timeouts
+- Does NOT retry: 4xx (permanent failures like 401/403/404)
+- On exhaustion: adapter falls back to seed data
 
 ## Error handling
 - Adapter failures must not crash the entire refresh.

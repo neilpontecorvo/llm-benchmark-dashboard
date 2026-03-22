@@ -7,10 +7,9 @@ A functional benchmark aggregation dashboard exists and is already beyond protot
 ## Confirmed current state
 
 - App stack: Next.js 15, TypeScript, Tailwind CSS, Prisma, SQLite
-- 12 benchmark adapters implemented
-- 3 adapters fetch live structured data
-- 8 adapters use seeded real scores
-- 1 adapter remains mock due to unreliable source access
+- 12 benchmark adapters implemented (11 live-capable, 1 retired)
+- All live adapters use `fetchWithRetry` with exponential backoff and per-request timeout
+- 181 tests across 6 suites — all passing
 - Dashboard computes a weighted overall top 3 from normalized per-benchmark scores
 - Refresh pipeline tolerates individual adapter failure
 - Export routes exist for PDF and PNG using Playwright
@@ -40,33 +39,23 @@ A functional benchmark aggregation dashboard exists and is already beyond protot
 - Seed/mock fallbacks stay in place until proven replaceable
 - Adapter failures must not crash refresh
 
-## Remaining work by phase
+## Remaining work
 
-### Phase 6 — Export
-- validate 12-table export layout
-- refine print CSS
-- confirm timestamped export filename convention
-- test mixed table lengths
-
-### Phase 7 — Testing
-- 12 fixture-based adapter tests
-- normalization tests
-- overall ranking tests
-- refresh route integration test
-- export route smoke test
-
-### Phase 8 — Deployment
-- production database target
-- startup environment validation
+### Phase 8 — Deployment [NOT STARTED]
+- health check endpoint (`/api/health`)
 - Vercel or Docker deployment option
-- scheduled refresh support
+- scheduled refresh support (cron endpoint)
+
+### Improvements
+- last-known-good data fallback on fetch failure
+- historical score tracking and trend visualization
+- model comparison view
 
 ## Known limitations
 
-- Arena sources are SPA-based with no stable public API
-- LiveBench has no structured public API in use
-- Vellum-derived benchmark visibility is limited to top 5
-- Artificial Analysis structured ingestion is still blocked/unreliable
+- LiveBench HF dataset may lag behind livebench.ai (falls back to seed)
+- HF Open LLM benchmark was retired 2025-03-13 (kept for archival)
+- AA API free tier limited to 1,000 requests/day
 - No auth and no scheduled refresh in current state
 
 ## Latest report snapshot

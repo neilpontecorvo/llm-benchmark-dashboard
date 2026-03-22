@@ -77,24 +77,23 @@ Always preserve full model names with versions. Avoid silently coercing missing 
 ## Current repository state
 
 Implemented:
-- 12 adapters total
-- 3 live adapters: SWE-bench, Aider, HF Open LLM
-- seed adapters for Arena, LiveBench, and Vellum-derived benchmarks
-- mock fallback for Artificial Analysis
+- 12 adapters total (11 live-capable, 0 seed-only, 1 retired)
+- Live via AA API v2 (x-api-key): AA, GPQA, HLE, MMMLU, Arena T2V, Arena I2V
+- Live via other APIs: Arena Text (LMArena JSON), Arena T2I (LMArena JSON), SWE-bench (GitHub JSON), Aider (GitHub YAML), LiveBench (HF parquet), HF Open LLM (retired)
+- `fetchWithRetry` on all 9 live-fetching adapters (3 attempts, exponential backoff, per-request timeout)
 - refresh pipeline with success / partial / failed states
 - stale warning threshold at 24 hours
 - live/mock badges, category pills, score bars, weight indicators, top-row highlighting
-- PDF and PNG export routes via Playwright
+- Model card URLs on Top 3 cards (Gemini 3, Claude Opus 4.6, GPT-5.4, Kimi K2)
+- PDF and PNG export routes via Playwright with full feature parity
+- 181 tests across 6 suites — all passing
 
 Open work:
-- export layout validation for all 12 benchmark tables
-- print CSS refinements
-- fixture-based adapter tests
-- normalization and ranking tests
-- refresh and export smoke tests
-- retry/backoff for live fetches
-- deployment configuration
-- later: LiveBench/Arena live discovery, historical tracking, model comparison
+- last-known-good data fallback on fetch failure
+- deployment configuration (Vercel or Docker)
+- scheduled refresh support (cron endpoint)
+- health check endpoint
+- later: historical tracking, model comparison
 
 ## Preferred workflow
 
@@ -119,12 +118,10 @@ When planning work:
 
 ## Priority order
 
-1. Export hardening
-2. Adapter fixture tests
-3. Normalization and ranking tests
-4. Refresh/export smoke tests
-5. Retry/backoff for live fetch failures
-6. Deployment config
+1. Last-known-good data fallback
+2. Health check endpoint (`/api/health`)
+3. Deployment config (Vercel or Docker)
+4. Scheduled refresh support
 
 ## Source-of-truth hierarchy
 

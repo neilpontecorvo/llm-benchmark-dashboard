@@ -13,13 +13,13 @@ A Next.js dashboard that aggregates 12 LLM benchmark leaderboards, computes a we
 | GPQA Diamond | Reasoning | [AA API v2](https://artificialanalysis.ai) (`evaluations.gpqa`) | Live (API, `x-api-key`) / Seed fallback |
 | Humanity's Last Exam | Reasoning | [AA API v2](https://artificialanalysis.ai) (`evaluations.hle`) → [Scale Labs](https://labs.scale.com/leaderboard/humanitys_last_exam) | Live (API primary, HTML fallback) / Seed |
 | MMMLU (MMLU-Pro) | Multilingual | [AA API v2](https://artificialanalysis.ai) (`evaluations.mmlu_pro`) | Live (API, `x-api-key`) / Seed fallback |
-| LiveBench | General | [livebench.ai](https://livebench.ai/) | Seed (JS-rendered SPA, HuggingFace planned) |
+| LiveBench | General | [HF livebench/model_judgment](https://huggingface.co/datasets/livebench/model_judgment) → [livebench.ai](https://livebench.ai/) | Live (HF parquet) / Seed fallback |
 | Hugging Face Open LLM | Open-Only | [huggingface.co](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) | Live (HF API) ⚠️ Retired 2025-03-13 |
 | Arena Text to Image | Text to Image | [LMArena catalog JSON](https://github.com/lmarena/arena-catalog) | Live (JSON) / Seed fallback |
 | Arena Text to Video | Text to Video | [AA API v2](https://artificialanalysis.ai/api/v2/data/media/text-to-video) | Live (API, `x-api-key`) / Seed fallback |
 | Arena Image to Video | Image to Video | [AA API v2](https://artificialanalysis.ai/api/v2/data/media/image-to-video) | Live (API, `x-api-key`) / Seed fallback |
 
-**10 live-capable** · **1 seed-only** · **1 retired/archival**
+**11 live-capable** · **0 seed-only** · **1 retired/archival**
 
 **Data modes:**
 - **Live** — fetches structured data (JSON, YAML, API) on each refresh
@@ -52,7 +52,8 @@ Scores are normalized independently to 0-100 per benchmark before weighting. Vis
 - Adapter pattern with per-adapter live/mock toggle
 - Centralized CSS variable theme system (`app/theme.css`)
 - PDF and PNG export via Playwright headless render
-- Vitest test suite (174 tests)
+- Vitest test suite (181 tests)
+- Exponential backoff with per-request timeout (`lib/fetch-with-retry.ts`)
 - Environment validation via Next.js instrumentation hook
 
 ## Setup
@@ -99,22 +100,32 @@ Set `USE_MOCK_DATA="false"` to enable selective live rollout. Each adapter has i
 
 | Key | Adapters | Auth Header | Required? |
 |---|---|---|---|
-| `ARTIFICIAL_ANALYSIS_API_KEY` | AA, GPQA Diamond, HLE, MMMLU, Arena T2V, Arena I2V | `x-api-key` | Optional — falls back to seed data without it. Free tier: 1,000 req/day |
+| `ARTIFICIAL_ANALYSIS_API_KEY` | AA, GPQA Diamond, HLE, MMMLU, Arena T2V, Arena I2V | `x-api-key` | Optional — falls back to seed without it. Free tier: 1,000 req/day |
+
+### Live fetch resilience
+
+All live adapters use `fetchWithRetry()` from `lib/fetch-with-retry.ts`:
+- **3 attempts** with exponential backoff (1s → 2s → 4s)
+- **Per-request timeout**: 10–15s depending on adapter
+- Retries on 429 (rate limit), 5xx, network errors, timeouts
+- Immediate bail on 4xx (permanent failures like 401/403/404)
+- On exhaustion, adapter falls back to seed data
 
 ## Testing
 
 ```bash
-npm test              # Run all 174 tests
+npm test              # Run all 181 tests
 npm run test:watch    # Watch mode
 npm run test:coverage # Coverage report
 ```
 
-**Test suites (5):**
+**Test suites (6):**
 - Normalization (7 tests) — min-max scaling, rank fallback, edge cases
 - Overall ranking (8 tests) — weighted scoring, multi-benchmark aggregation, tie-breaking, visual benchmark exclusion
 - Weights validation (8 tests) — sum to 1.0, keys have names/categories/labels
 - Adapter contracts (139 tests) — all 12 adapters × shape, dataSource, normalizedScore bounds
 - Environment validation (4 tests) — env variable checks
+- fetchWithRetry (7 tests) — retry on 5xx/429, bail on 4xx, timeout, backoff, exhaustion
 
 ## API routes
 
@@ -148,7 +159,7 @@ To customize the dashboard appearance, edit `app/theme.css` or use the **Theme P
 
 ## UI features
 
-- **Overall Top 3** with weighted scores, strength tags, and scoring methodology explanation
+- **Overall Top 3** with weighted scores, strength tags, model card links, and scoring methodology explanation
 - **Heat-gradient score bars** with 5-tier color scale (indigo → green → yellow → orange → red)
 - **Strength tags** on top-3 cards showing which benchmarks each model excels in
 - **Live/Mock badge** per benchmark card (green dot = live data, grey = mock)
@@ -191,7 +202,7 @@ lib/
     artificial-analysis.ts      # Artificial Analysis (AA API v2 + seed)
     swebench.ts                 # SWE-bench Verified (live GitHub JSON)
     aider.ts                    # Aider Polyglot (live GitHub YAML)
-    livebench.ts                # LiveBench (seed — HuggingFace planned)
+    livebench.ts                # LiveBench (HF parquet + seed fallback)
     hf-open-llm.ts              # HF Open LLM (live API, retired)
     arena-text-to-image.ts      # Arena T2I (LMArena catalog JSON + seed)
     arena-text-to-video.ts      # Arena T2V (AA API v2 media + seed)
@@ -204,6 +215,7 @@ lib/
     overall-rank.ts             # Weighted overall top 3
   refresh.ts                    # Refresh pipeline + getDashboardData
   mock-data.ts                  # Mock data generator
+  fetch-with-retry.ts             # Exponential backoff wrapper (3 attempts, timeout)
   types.ts                      # TypeScript types
   weights.ts                    # Benchmark names, weights, categories, descriptions
   env.ts                        # Environment validation helper
@@ -216,6 +228,7 @@ __tests__/
   adapters/
     adapter-contracts.test.ts   # Contract tests for all 12 adapters
   env.test.ts                   # Environment validation tests
+  fetch-with-retry.test.ts      # Retry/backoff unit tests
 prisma/
   schema.prisma                 # SQLite schema
 instrumentation.ts              # Next.js startup hook (env validation)
@@ -245,9 +258,8 @@ LLM Dashboard Theme Architect.html  # Standalone theme editor web app
 
 - No authentication
 - No scheduled refresh (manual trigger only)
-- No retry/backoff policy for live fetches
 - No last-known-good fallback on fetch failure
-- LiveBench is seed-only (HuggingFace datasets integration planned)
 - HF Open LLM benchmark was retired 2025-03-13 (kept for archival)
+- LiveBench HF dataset may lag behind livebench.ai (falls back to seed when stale)
 - No deployment config yet (Vercel/Docker)
 - AA API free tier limited to 1,000 requests/day

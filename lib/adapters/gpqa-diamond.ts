@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkResult } from "@/lib/types";
 
 /**
@@ -54,16 +55,14 @@ export class GPQADiamondAdapter extends BaseAdapter {
     }
 
     try {
-      const res = await fetch(API_URL, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-          "x-api-key": apiKey,
-          Accept: "application/json",
+      const res = await fetchWithRetry(
+        API_URL,
+        {
+          headers: { "User-Agent": "Mozilla/5.0", "x-api-key": apiKey, Accept: "application/json" },
+          cache: "no-store",
         },
-        cache: "no-store",
-      });
-
-      if (!res.ok) throw new Error("AA API failed: " + String(res.status));
+        { label: "gpqa-diamond", timeoutMs: 15_000 }
+      );
 
       const json = (await res.json()) as { data?: AAModel[] } | AAModel[];
       const models = Array.isArray(json) ? json : (json.data ?? []);

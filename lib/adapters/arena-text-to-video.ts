@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkResult } from "@/lib/types";
 
 /**
@@ -56,16 +57,11 @@ export class ArenaTextToVideoAdapter extends BaseAdapter {
     }
 
     try {
-      const res = await fetch(API_URL, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-          "x-api-key": apiKey,
-          Accept: "application/json",
-        },
-        cache: "no-store",
-      });
-
-      if (!res.ok) throw new Error("AA T2V API failed: " + String(res.status));
+      const res = await fetchWithRetry(
+        API_URL,
+        { headers: { "User-Agent": "Mozilla/5.0", "x-api-key": apiKey, Accept: "application/json" }, cache: "no-store" },
+        { label: "arena-t2v", timeoutMs: 15_000 }
+      );
 
       const json = (await res.json()) as { data?: AAMediaModel[] } | AAMediaModel[];
       const models = Array.isArray(json) ? json : (json.data ?? []);

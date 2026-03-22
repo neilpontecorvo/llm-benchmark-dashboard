@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkResult } from "@/lib/types";
 
 /**
@@ -33,14 +34,11 @@ export class AiderAdapter extends BaseAdapter {
   }
 
   protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {
-    const res = await fetch(DATA_URL, {
-      headers: { "User-Agent": "Mozilla/5.0" },
-      cache: "no-store"
-    });
-
-    if (!res.ok) {
-      throw new Error(`Aider YAML fetch failed: ${res.status}`);
-    }
+    const res = await fetchWithRetry(
+      DATA_URL,
+      { headers: { "User-Agent": "Mozilla/5.0" }, cache: "no-store" },
+      { label: "aider", timeoutMs: 10_000 }
+    );
 
     const text = await res.text();
     const entries = parseSimpleYaml(text);

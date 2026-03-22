@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkCategory, BenchmarkResult } from "@/lib/types";
 
 const DATA_URL =
@@ -32,14 +33,11 @@ export class SWEBenchAdapter extends BaseAdapter {
   }
 
   protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {
-    const res = await fetch(DATA_URL, {
-      headers: { "User-Agent": "Mozilla/5.0" },
-      cache: "no-store"
-    });
-
-    if (!res.ok) {
-      throw new Error(`SWE-bench data fetch failed: ${res.status}`);
-    }
+    const res = await fetchWithRetry(
+      DATA_URL,
+      { headers: { "User-Agent": "Mozilla/5.0" }, cache: "no-store" },
+      { label: "swe-bench", timeoutMs: 10_000 }
+    );
 
     const payload: SWEBenchPayload = await res.json();
     const verified = payload.leaderboards.find((lb) => lb.name === "Verified");

@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkResult } from "@/lib/types";
 
 /**
@@ -51,11 +52,12 @@ export class HumanitysLastExamAdapter extends BaseAdapter {
     const apiKey = process.env.ARTIFICIAL_ANALYSIS_API_KEY;
     if (apiKey) {
       try {
-        const res = await fetch(AA_API_URL, {
-          headers: { "User-Agent": "Mozilla/5.0", "x-api-key": apiKey, Accept: "application/json" },
-          cache: "no-store",
-        });
-        if (res.ok) {
+        const res = await fetchWithRetry(
+          AA_API_URL,
+          { headers: { "User-Agent": "Mozilla/5.0", "x-api-key": apiKey, Accept: "application/json" }, cache: "no-store" },
+          { label: "hle-aa", timeoutMs: 15_000 }
+        );
+        {
           const json = (await res.json()) as { data?: AAModel[] } | AAModel[];
           const models = Array.isArray(json) ? json : (json.data ?? []);
           const withHle = models
@@ -96,12 +98,11 @@ export class HumanitysLastExamAdapter extends BaseAdapter {
 
     // Fallback: Scale Labs HTML scraping
     try {
-      const res = await fetch(LIVE_URL, {
-        headers: { "User-Agent": "Mozilla/5.0", Accept: "text/html" },
-        cache: "no-store",
-      });
-
-      if (!res.ok) throw new Error("Scale Labs HLE fetch failed: " + String(res.status));
+      const res = await fetchWithRetry(
+        LIVE_URL,
+        { headers: { "User-Agent": "Mozilla/5.0", Accept: "text/html" }, cache: "no-store" },
+        { label: "hle-scale", timeoutMs: 15_000 }
+      );
 
       const html = await res.text();
       const parsed = this.parseLeaderboard(html, limit);

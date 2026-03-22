@@ -1,4 +1,5 @@
 import { BaseAdapter } from "@/lib/adapters/_base";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import type { BenchmarkCategory, BenchmarkResult } from "@/lib/types";
 
 /**
@@ -45,12 +46,11 @@ export class ArenaTextAdapter extends BaseAdapter {
 
   protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {
     try {
-      const res = await fetch(LIVE_URL, {
-        headers: { "User-Agent": "Mozilla/5.0" },
-        cache: "no-store",
-      });
-
-      if (!res.ok) throw new Error(`LMArena JSON fetch failed: ${res.status}`);
+      const res = await fetchWithRetry(
+        LIVE_URL,
+        { headers: { "User-Agent": "Mozilla/5.0" }, cache: "no-store" },
+        { label: "arena-text", timeoutMs: 10_000 }
+      );
 
       const json = (await res.json()) as LeaderboardJSON;
       const parsed = this.parseOverallRankings(json, limit);

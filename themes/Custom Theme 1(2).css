@@ -1,0 +1,118 @@
+/* Custom Theme 1 — LLM Benchmark Dashboard */
+:root {
+
+  /* Fonts */
+  --font-family-base:          "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono:          "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-family-heading:       var(--font-family-base);
+
+  /* Page */
+  --page-bg                     : #0f172a;
+  --page-text                   : #e2e8f0;
+  --page-text-muted             : #94a3b8;
+  --page-text-faint             : #64748b;
+
+  /* Cards */
+  --card-bg                     : #1e293b;
+  --card-border                 : #334155;
+
+  /* Buttons */
+  --btn-primary-bg              : #3b82f6;
+  --btn-primary-text            : #ffffff;
+  --btn-secondary-bg            : #1e293b;
+  --btn-secondary-text          : #e2e8f0;
+  --btn-secondary-border        : #475569;
+
+  /* Links */
+  --link-color                  : #60a5fa;
+
+  /* Tables */
+  --table-header-text           : #94a3b8;
+  --table-header-border         : #334155;
+  --table-row-border            : #1e293b;
+  --table-rank-text             : #64748b;
+  --table-provider-text         : #94a3b8;
+
+  /* Score Bar Heat Gradient */
+  --scorebar-track              : #334155;
+  --heat-0-from                 : #818cf8;
+  --heat-0-to                   : #60a5fa;
+  --heat-20-from                : #60a5fa;
+  --heat-20-to                  : #22d3ee;
+  --heat-40-from                : #22d3ee;
+  --heat-40-to                  : #facc15;
+  --heat-60-from                : #facc15;
+  --heat-60-to                  : #fb923c;
+  --heat-80-from                : #fb923c;
+  --heat-80-to                  : #f87171;
+
+  /* Rank Cards (Gold / Silver / Bronze) */
+  --rank1-bg                    : #424242;
+  --rank1-text                  : #797979;
+  --rank1-border                : #00fcff;
+  --rank2-bg                    : #5e5e5e;
+  --rank2-text                  : #ff9300;
+  --rank2-border                : #00fcff;
+  --rank3-bg                    : #424242;
+  --rank3-text                  : #ff9300;
+  --rank3-border                : #00fcff;
+
+  /* Category Pills (10) */
+  --cat-general-bg              : #1e3a5f;
+  --cat-general-text            : #93c5fd;
+  --cat-general-border          : #2563eb;
+  --cat-coding-bg               : #2e1065;
+  --cat-coding-text             : #c4b5fd;
+  --cat-coding-border           : #7c3aed;
+  --cat-agentic-bg              : #064e3b;
+  --cat-agentic-text            : #6ee7b7;
+  --cat-agentic-border          : #059669;
+  --cat-open-only-bg            : #431407;
+  --cat-open-only-text          : #fdba74;
+  --cat-open-only-border        : #c2410c;
+  --cat-community-bg            : #500724;
+  --cat-community-text          : #f9a8d4;
+  --cat-community-border        : #be185d;
+  --cat-text-to-image-bg        : #4a044e;
+  --cat-text-to-image-text      : #f0abfc;
+  --cat-text-to-image-border    : #a21caf;
+  --cat-text-to-video-bg        : #4c0519;
+  --cat-text-to-video-text      : #fda4af;
+  --cat-text-to-video-border    : #be123c;
+  --cat-image-to-video-bg       : #451a03;
+  --cat-image-to-video-text     : #fcd34d;
+  --cat-image-to-video-border   : #b45309;
+  --cat-reasoning-bg            : #083344;
+  --cat-reasoning-text          : #67e8f9;
+  --cat-reasoning-border        : #0891b2;
+  --cat-multilingual-bg         : #042f2e;
+  --cat-multilingual-text       : #5eead4;
+  --cat-multilingual-border     : #0d9488;
+
+  /* Status Banners */
+  --banner-success-bg           : #052e16;
+  --banner-success-text         : #86efac;
+  --banner-success-border       : #166534;
+  --banner-warning-bg           : #422006;
+  --banner-warning-text         : #fde68a;
+  --banner-warning-border       : #854d0e;
+  --banner-error-bg             : #450a0a;
+  --banner-error-text           : #fca5a5;
+  --banner-error-border         : #991b1b;
+
+  /* Live / Mock Badges */
+  --badge-live-bg               : #052e16;
+  --badge-live-text             : #86efac;
+  --badge-live-dot              : #22c55e;
+  --badge-mock-bg               : #1e293b;
+  --badge-mock-text             : #94a3b8;
+  --badge-mock-dot              : #64748b;
+
+  /* Layout */
+  --card-shadow:               0 10px 30px rgba(15, 23, 42, 0.08);
+  --card-radius:               1.25rem;
+  --btn-radius:                0.75rem;
+  --scorebar-height:           0.625rem;
+  --table-top3-bg:             rgba(248, 250, 252, 0.6);
+  --table-model-text:          var(--page-text);
+}

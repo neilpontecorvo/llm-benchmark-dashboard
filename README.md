@@ -6,20 +6,20 @@ A Next.js dashboard that aggregates 12 LLM benchmark leaderboards, computes a we
 
 | Benchmark | Category | Source | Data Mode |
 |---|---|---|---|
-| Artificial Analysis Intelligence Index | General | [AA API v2](https://artificialanalysis.ai/leaderboards/models) | Live (API, needs key) / Seed fallback |
+| Artificial Analysis Intelligence Index | General | [AA API v2](https://artificialanalysis.ai/leaderboards/models) | Live (API, `x-api-key`) / Seed fallback |
 | LM Arena Text | Community Preference | [LMArena catalog JSON](https://github.com/lmarena/arena-catalog) | Live (JSON) / Seed fallback |
 | SWE-bench Verified | Coding | [GitHub JSON](https://www.swebench.com/) | Live (GitHub JSON) |
 | Aider Polyglot | Coding | [GitHub YAML](https://aider.chat/docs/leaderboards/) | Live (GitHub YAML) |
-| LiveBench | General | [livebench.ai](https://livebench.ai/) | Seed (JS-rendered SPA, no API) |
+| GPQA Diamond | Reasoning | [AA API v2](https://artificialanalysis.ai) (`evaluations.gpqa`) | Live (API, `x-api-key`) / Seed fallback |
+| Humanity's Last Exam | Reasoning | [AA API v2](https://artificialanalysis.ai) (`evaluations.hle`) → [Scale Labs](https://labs.scale.com/leaderboard/humanitys_last_exam) | Live (API primary, HTML fallback) / Seed |
+| MMMLU (MMLU-Pro) | Multilingual | [AA API v2](https://artificialanalysis.ai) (`evaluations.mmlu_pro`) | Live (API, `x-api-key`) / Seed fallback |
+| LiveBench | General | [livebench.ai](https://livebench.ai/) | Seed (JS-rendered SPA, HuggingFace planned) |
 | Hugging Face Open LLM | Open-Only | [huggingface.co](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) | Live (HF API) ⚠️ Retired 2025-03-13 |
 | Arena Text to Image | Text to Image | [LMArena catalog JSON](https://github.com/lmarena/arena-catalog) | Live (JSON) / Seed fallback |
-| Arena Text to Video | Text to Video | [arena.ai](https://arena.ai/leaderboard) | Seed (no public JSON) |
-| Arena Image to Video | Image to Video | [arena.ai](https://arena.ai/leaderboard) | Seed (no public JSON) |
-| GPQA Diamond | Reasoning | [AA API v2](https://artificialanalysis.ai) | Live (API, needs key) / Seed fallback |
-| Humanity's Last Exam | Reasoning | [Scale Labs](https://labs.scale.com/leaderboard/humanitys_last_exam) | Live (HTML parse) / Seed fallback |
-| MMMLU | Multilingual | Seed data | Seed (no official endpoint) |
+| Arena Text to Video | Text to Video | [AA API v2](https://artificialanalysis.ai/api/v2/data/media/text-to-video) | Live (API, `x-api-key`) / Seed fallback |
+| Arena Image to Video | Image to Video | [AA API v2](https://artificialanalysis.ai/api/v2/data/media/image-to-video) | Live (API, `x-api-key`) / Seed fallback |
 
-**7 live-capable** · **3 seed-only** · **1 retired/archival** · **1 mock fallback**
+**10 live-capable** · **1 seed-only** · **1 retired/archival**
 
 **Data modes:**
 - **Live** — fetches structured data (JSON, YAML, API) on each refresh
@@ -30,20 +30,20 @@ A Next.js dashboard that aggregates 12 LLM benchmark leaderboards, computes a we
 
 | Benchmark | Weight |
 |---|---|
-| Artificial Analysis | 15% |
-| Arena Text | 12% |
-| LiveBench | 10% |
-| SWE-bench Verified | 10% |
-| GPQA Diamond | 10% |
-| Humanity's Last Exam | 10% |
-| Arena Text to Image | 8% |
-| Arena Text to Video | 8% |
-| Arena Image to Video | 7% |
-| Aider Polyglot | 5% |
-| MMMLU | 5% |
-| Hugging Face Open LLM | 0% (excluded) |
+| Artificial Analysis | 20% |
+| Arena Text | 15% |
+| LiveBench | 13% |
+| SWE-bench Verified | 13% |
+| GPQA Diamond | 13% |
+| Humanity's Last Exam | 13% |
+| Aider Polyglot | 7% |
+| MMMLU | 6% |
+| Arena Text to Image | 0% (visual, excluded) |
+| Arena Text to Video | 0% (visual, excluded) |
+| Arena Image to Video | 0% (visual, excluded) |
+| Hugging Face Open LLM | 0% (retired, excluded) |
 
-Scores are normalized independently to 0-100 per benchmark before weighting.
+Scores are normalized independently to 0-100 per benchmark before weighting. Visual generation benchmarks (T2I, T2V, I2V) are displayed on the dashboard but excluded from the overall ranking to prevent image/video-only models from appearing in the Top 3.
 
 ## Tech stack
 
@@ -52,7 +52,7 @@ Scores are normalized independently to 0-100 per benchmark before weighting.
 - Adapter pattern with per-adapter live/mock toggle
 - Centralized CSS variable theme system (`app/theme.css`)
 - PDF and PNG export via Playwright headless render
-- Vitest test suite (173 tests)
+- Vitest test suite (174 tests)
 - Environment validation via Next.js instrumentation hook
 
 ## Setup
@@ -76,10 +76,10 @@ EXPORT_OUTPUT_DIR="./exports"
 USE_MOCK_DATA="true"
 
 # API keys for live adapters
-ARTIFICIAL_ANALYSIS_API_KEY=""   # Required for AA, GPQA Diamond live mode
+ARTIFICIAL_ANALYSIS_API_KEY=""   # Required for AA, GPQA, HLE, MMMLU, T2V, I2V live mode
 
 # Per-adapter live flags (only checked when USE_MOCK_DATA="false")
-USE_LIVE_ARTIFICIAL_ANALYSIS="false"
+USE_LIVE_ARTIFICIAL_ANALYSIS="true"
 USE_LIVE_ARENA_TEXT="true"
 USE_LIVE_SWE_BENCH="true"
 USE_LIVE_AIDER="true"
@@ -97,21 +97,21 @@ Set `USE_MOCK_DATA="false"` to enable selective live rollout. Each adapter has i
 
 ### API keys
 
-| Key | Adapters | Required? |
-|---|---|---|
-| `ARTIFICIAL_ANALYSIS_API_KEY` | Artificial Analysis, GPQA Diamond | Optional — falls back to seed data without it |
+| Key | Adapters | Auth Header | Required? |
+|---|---|---|---|
+| `ARTIFICIAL_ANALYSIS_API_KEY` | AA, GPQA Diamond, HLE, MMMLU, Arena T2V, Arena I2V | `x-api-key` | Optional — falls back to seed data without it. Free tier: 1,000 req/day |
 
 ## Testing
 
 ```bash
-npm test              # Run all 173 tests
+npm test              # Run all 174 tests
 npm run test:watch    # Watch mode
 npm run test:coverage # Coverage report
 ```
 
 **Test suites (5):**
 - Normalization (7 tests) — min-max scaling, rank fallback, edge cases
-- Overall ranking (7 tests) — weighted scoring, multi-benchmark aggregation, tie-breaking
+- Overall ranking (8 tests) — weighted scoring, multi-benchmark aggregation, tie-breaking, visual benchmark exclusion
 - Weights validation (8 tests) — sum to 1.0, keys have names/categories/labels
 - Adapter contracts (139 tests) — all 12 adapters × shape, dataSource, normalizedScore bounds
 - Environment validation (4 tests) — env variable checks
@@ -124,6 +124,10 @@ npm run test:coverage # Coverage report
 | `/api/refresh` | POST | Refresh all benchmarks (returns per-adapter status) |
 | `/api/export/pdf` | GET | Export dashboard as PDF |
 | `/api/export/png` | GET | Export dashboard as PNG |
+| `/api/themes` | GET | List available themes |
+| `/api/themes` | POST | Upload a new theme CSS file |
+| `/api/themes/[name]` | GET | Fetch theme CSS by name |
+| `/api/themes/[name]` | DELETE | Delete a theme (except Default Light) |
 | `/export/report` | GET | Print-optimized render view |
 
 ## Theme system
@@ -140,7 +144,7 @@ All visual styling is controlled by CSS custom properties in `app/theme.css` (~8
 - Badge colors (live/mock)
 - Font family and typography
 
-To customize the dashboard appearance, edit `app/theme.css`. All components read from these variables — no scattered hex values to hunt down.
+To customize the dashboard appearance, edit `app/theme.css` or use the **Theme Picker** in the dashboard header to import and switch between theme presets. Themes are stored in the `themes/` directory and managed via the `/api/themes` API routes. The companion **Theme Architect** (`LLM Dashboard Theme Architect.html`) provides a visual editor for creating new themes with live preview.
 
 ## UI features
 
@@ -170,28 +174,31 @@ app/
     refresh/route.ts            # POST refresh trigger
     export/pdf/route.ts         # PDF export
     export/png/route.ts         # PNG export
+    themes/route.ts             # Theme list and upload
+    themes/[name]/route.ts      # Theme fetch and delete
   export/report/page.tsx        # Export render view (inline styles for Playwright)
 components/
   dashboard-header.tsx          # Refresh button, status banners, export links
   benchmark-card.tsx            # Per-benchmark card with category/source badges
   benchmark-table.tsx           # Ranked table with heat-gradient score bars
   overall-top3.tsx              # Overall weighted top 3 with strength tags
+  theme-picker.tsx              # Theme selection, import, and deletion
 lib/
   adapters/
     _base.ts                    # BaseAdapter with mock/live toggle
     index.ts                    # Adapter registry (all 12)
     arena-text.ts               # LM Arena Text (LMArena catalog JSON + seed)
-    artificial-analysis.ts      # Artificial Analysis (API v2 + seed)
+    artificial-analysis.ts      # Artificial Analysis (AA API v2 + seed)
     swebench.ts                 # SWE-bench Verified (live GitHub JSON)
     aider.ts                    # Aider Polyglot (live GitHub YAML)
-    livebench.ts                # LiveBench (seed)
+    livebench.ts                # LiveBench (seed — HuggingFace planned)
     hf-open-llm.ts              # HF Open LLM (live API, retired)
     arena-text-to-image.ts      # Arena T2I (LMArena catalog JSON + seed)
-    arena-text-to-video.ts      # Arena T2V (seed)
-    arena-image-to-video.ts     # Arena I2V (seed)
-    gpqa-diamond.ts             # GPQA Diamond (AA API v2 + seed)
-    humanitys-last-exam.ts      # Humanity's Last Exam (Scale Labs HTML + seed)
-    mmmlu.ts                    # MMMLU (seed)
+    arena-text-to-video.ts      # Arena T2V (AA API v2 media + seed)
+    arena-image-to-video.ts     # Arena I2V (AA API v2 media + seed)
+    gpqa-diamond.ts             # GPQA Diamond (AA API v2 evaluations.gpqa + seed)
+    humanitys-last-exam.ts      # Humanity's Last Exam (AA API v2 → Scale Labs HTML → seed)
+    mmmlu.ts                    # MMMLU (AA API v2 evaluations.mmlu_pro + seed)
   scoring/
     normalize.ts                # 0-100 normalization
     overall-rank.ts             # Weighted overall top 3
@@ -213,6 +220,11 @@ prisma/
   schema.prisma                 # SQLite schema
 instrumentation.ts              # Next.js startup hook (env validation)
 vitest.config.ts                # Vitest configuration
+themes/
+  Default Light.css             # Default theme preset
+  Midnight Dark.css             # Dark theme preset
+  Ocean Blue.css                # Blue-tinted light theme preset
+LLM Dashboard Theme Architect.html  # Standalone theme editor web app
 ```
 
 ## Adding a new benchmark
@@ -235,8 +247,7 @@ vitest.config.ts                # Vitest configuration
 - No scheduled refresh (manual trigger only)
 - No retry/backoff policy for live fetches
 - No last-known-good fallback on fetch failure
-- Seed adapters require manual updates when source data changes
-- Arena T2V and I2V have no public structured endpoint
-- MMMLU has no strong official public endpoint
+- LiveBench is seed-only (HuggingFace datasets integration planned)
 - HF Open LLM benchmark was retired 2025-03-13 (kept for archival)
 - No deployment config yet (Vercel/Docker)
+- AA API free tier limited to 1,000 requests/day

@@ -3,9 +3,16 @@ import type { BenchmarkResult } from "@/lib/types";
 
 /**
  * Arena Text-to-Video leaderboard.
- * Source: https://arena.ai/leaderboard (Text to Video tab)
- * ELO-based community voting. No public JSON API — seeded from latest scrape.
+ *
+ * Live source: Artificial Analysis API v2 media endpoint.
+ * Endpoint: https://artificialanalysis.ai/api/v2/data/media/text-to-video
+ * Returns ELO ratings with confidence intervals and appearance counts.
+ * Requires ARTIFICIAL_ANALYSIS_API_KEY env var.
+ *
+ * Falls back to seed data if API key is missing or request fails.
  */
+
+const API_URL = "https://artificialanalysis.ai/api/v2/data/media/text-to-video";
 
 const SEED_DATA = [
   { model: "Veo 3.1 Audio 1080p", provider: "Google DeepMind", elo: 1381, votes: 5537 },
@@ -20,10 +27,19 @@ const SEED_DATA = [
   { model: "Veo 3 Audio", provider: "Google DeepMind", elo: 1341, votes: 19331 }
 ];
 
+interface AAMediaModel {
+  name?: string;
+  model_creator?: { name?: string };
+  elo?: number;
+  rank?: number;
+  ci95?: string;
+  appearances?: number;
+}
+
 export class ArenaTextToVideoAdapter extends BaseAdapter {
   key = "arena_text_to_video" as const;
   displayName = "Arena Text to Video";
-  sourceUrl = "https://arena.ai/leaderboard";
+  sourceUrl = "https://artificialanalysis.ai/leaderboards/video-generation";
   includedInOverall = false;
 
   protected shouldUseMock(): boolean {
@@ -31,8 +47,60 @@ export class ArenaTextToVideoAdapter extends BaseAdapter {
     return process.env.USE_LIVE_ARENA_TEXT_TO_VIDEO !== "true";
   }
 
-  protected async fetchLive(_limit: number): Promise<BenchmarkResult[]> {
-    return this.buildFromSeed(_limit);
+  protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {
+    const apiKey = process.env.ARTIFICIAL_ANALYSIS_API_KEY;
+
+    if (!apiKey) {
+      console.warn("[arena-text-to-video] No AA API key — using seed data");
+      return this.buildFromSeed(limit);
+    }
+
+    try {
+      const res = await fetch(API_URL, {
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "x-api-key": apiKey,
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) throw new Error("AA T2V API failed: " + String(res.status));
+
+      const json = (await res.json()) as { data?: AAMediaModel[] } | AAMediaModel[];
+      const models = Array.isArray(json) ? json : (json.data ?? []);
+
+      const withElo = models
+        .filter((m) => m.elo != null && m.name)
+        .sort((a, b) => (b.elo ?? 0) - (a.elo ?? 0))
+        .slice(0, limit);
+
+      if (withElo.length < 5) {
+        throw new Error("AA T2V API returned only " + String(withElo.length) + " models");
+      }
+
+      const fetchedAt = new Date().toISOString();
+
+      return this.normalizeLiveRows(
+        withElo.map((row, idx) => ({
+          id: `${this.key}:${row.name}:${idx + 1}`,
+          benchmarkKey: this.key,
+          fetchedAt,
+          modelName: row.name!,
+          provider: row.model_creator?.name,
+          rank: row.rank ?? idx + 1,
+          rawScore: row.elo!,
+          rawScoreText: `${row.elo} ELO`,
+          normalizedScore: null as number | null,
+          confidenceText: row.ci95 ? `CI95: ${row.ci95}` : (row.appearances ? `${row.appearances.toLocaleString()} appearances` : null),
+          category: "text_to_video" as const,
+          sourceUrl: this.sourceUrl,
+          includedInOverall: this.includedInOverall,
+        }))
+      );
+    } catch {
+      return this.buildFromSeed(limit);
+    }
   }
 
   private buildFromSeed(limit: number): BenchmarkResult[] {

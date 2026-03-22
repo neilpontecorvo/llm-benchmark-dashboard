@@ -10,16 +10,16 @@ import type { BenchmarkResult } from "@/lib/types";
  */
 
 const SEED_DATA = [
-  { model: "o3-mini", provider: "OpenAI", score: 84.6 },
-  { model: "Qwen3 235B A22B", provider: "Alibaba", score: 77.1 },
-  { model: "Kimi K2 Instruct 0905", provider: "Moonshot AI", score: 76.4 },
-  { model: "Kimi K2 Instruct", provider: "Moonshot AI", score: 76.4 },
-  { model: "Qwen3 32B", provider: "Alibaba", score: 74.9 },
-  { model: "Qwen3 30B A3B", provider: "Alibaba", score: 74.3 },
-  { model: "QwQ-32B", provider: "Alibaba", score: 73.1 },
-  { model: "o1", provider: "OpenAI", score: 67.0 },
-  { model: "Qwen2.5 72B Instruct", provider: "Alibaba", score: 52.3 },
-  { model: "o1-preview", provider: "OpenAI", score: 52.3 }
+  { model: "Claude Opus 4.6 Thinking", provider: "Anthropic", score: 84.6 },
+  { model: "GPT-5.4 High", provider: "OpenAI", score: 83.2 },
+  { model: "Gemini 3 Pro", provider: "Google DeepMind", score: 81.7 },
+  { model: "Grok 4.20", provider: "xAI", score: 79.4 },
+  { model: "Claude Opus 4.6", provider: "Anthropic", score: 78.8 },
+  { model: "GPT-5.2", provider: "OpenAI", score: 77.1 },
+  { model: "Gemini 3 Flash", provider: "Google DeepMind", score: 74.9 },
+  { model: "DeepSeek V4", provider: "DeepSeek", score: 73.1 },
+  { model: "Llama 4 Maverick", provider: "Meta", score: 67.0 },
+  { model: "Mistral Large 3", provider: "Mistral AI", score: 64.5 }
 ];
 
 export class LiveBenchAdapter extends BaseAdapter {

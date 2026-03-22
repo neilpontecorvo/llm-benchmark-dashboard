@@ -22,7 +22,7 @@ function makeResult(overrides: Partial<BenchmarkResult> = {}): BenchmarkResult {
 describe("buildOverallTop3", () => {
   it("returns top 3 models sorted by weighted score", () => {
     const results: BenchmarkResult[] = [
-      // Model A appears in swe_bench (weight 0.10) with score 100
+      // Model A appears in swe_bench (weight 0.13) with score 100
       makeResult({
         id: "a1",
         modelName: "Model A",
@@ -30,7 +30,7 @@ describe("buildOverallTop3", () => {
         benchmarkKey: "swe_bench_verified",
         normalizedScore: 100,
       }),
-      // Model B appears in swe_bench (weight 0.10) with score 90
+      // Model B appears in swe_bench (weight 0.13) with score 90
       makeResult({
         id: "b1",
         modelName: "Model B",
@@ -69,7 +69,7 @@ describe("buildOverallTop3", () => {
 
   it("aggregates scores across multiple benchmarks", () => {
     const results: BenchmarkResult[] = [
-      // Model A in swe_bench (weight 0.10) score 100 → 10 points
+      // Model A in swe_bench (weight 0.13) score 100 → 13 points
       makeResult({
         id: "a1",
         modelName: "Model A",
@@ -77,7 +77,7 @@ describe("buildOverallTop3", () => {
         benchmarkKey: "swe_bench_verified",
         normalizedScore: 100,
       }),
-      // Model A in arena_text (weight 0.12) score 100 → 12 points (total 22)
+      // Model A in arena_text (weight 0.15) score 100 → 15 points (total 28)
       makeResult({
         id: "a2",
         modelName: "Model A",
@@ -86,7 +86,7 @@ describe("buildOverallTop3", () => {
         normalizedScore: 100,
         category: "community_preference",
       }),
-      // Model B in swe_bench score 100 → 10 points (only 1 benchmark)
+      // Model B in swe_bench score 100 → 13 points (only 1 benchmark)
       makeResult({
         id: "b1",
         modelName: "Model B",
@@ -99,8 +99,8 @@ describe("buildOverallTop3", () => {
     const top3 = buildOverallTop3(results);
 
     expect(top3[0].modelName).toBe("Model A");
-    // Model A: (100 * 0.10) + (100 * 0.12) = 22
-    expect(top3[0].weightedScore).toBe(22);
+    // Model A: (100 * 0.13) + (100 * 0.15) = 28
+    expect(top3[0].weightedScore).toBe(28);
     expect(top3[0].appearanceCount).toBe(2);
     expect(top3[0].includedBenchmarks).toContain("swe_bench_verified");
     expect(top3[0].includedBenchmarks).toContain("arena_text");
@@ -188,7 +188,7 @@ describe("buildOverallTop3", () => {
 
     const top3 = buildOverallTop3(results);
 
-    // Model B has 50 * 0.10 = 5 weighted score
+    // Model B has 50 * 0.13 = 6.5 weighted score
     // Model A has 100 * 0 = 0 weighted score
     expect(top3[0].modelName).toBe("Model B");
   });
@@ -214,7 +214,7 @@ describe("buildOverallTop3", () => {
 
     const top3 = buildOverallTop3(results);
 
-    // LLM Model: 50 * 0.10 = 5
+    // LLM Model: 50 * 0.13 = 6.5
     // Video Model: 100 * 0 = 0
     expect(top3[0].modelName).toBe("LLM Model");
   });
@@ -239,7 +239,7 @@ describe("buildOverallTop3", () => {
 
     const top3 = buildOverallTop3(results);
 
-    // Same weighted score (10), same appearance count (1) → alphabetical
+    // Same weighted score (13), same appearance count (1) → alphabetical
     expect(top3[0].modelName).toBe("Alpha Model");
     expect(top3[1].modelName).toBe("Zebra Model");
   });

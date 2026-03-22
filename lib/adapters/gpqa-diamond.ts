@@ -14,12 +14,12 @@ import type { BenchmarkResult } from "@/lib/types";
 const API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 
 const SEED_DATA = [
-  { model: "Claude 3 Opus", provider: "Anthropic", score: 95.4 },
-  { model: "GPT-5.2", provider: "OpenAI", score: 92.4 },
+  { model: "Claude Opus 4.6 Thinking", provider: "Anthropic", score: 95.4 },
+  { model: "GPT-5.4 High", provider: "OpenAI", score: 92.4 },
   { model: "Gemini 3 Pro", provider: "Google DeepMind", score: 91.9 },
   { model: "Claude Opus 4.6", provider: "Anthropic", score: 91.3 },
   { model: "Claude Sonnet 4.6", provider: "Anthropic", score: 89.9 },
-  { model: "GPT-5.4 High", provider: "OpenAI", score: 89.1 },
+  { model: "GPT-5.2", provider: "OpenAI", score: 89.1 },
   { model: "Grok 4.20", provider: "xAI", score: 87.5 },
   { model: "Gemini 3 Flash", provider: "Google DeepMind", score: 86.2 },
   { model: "DeepSeek V4", provider: "DeepSeek", score: 84.8 },
@@ -28,7 +28,7 @@ const SEED_DATA = [
 
 interface AAModel {
   name?: string;
-  provider?: string;
+  model_creator?: { name?: string };
   evaluations?: {
     gpqa?: number;
   };
@@ -57,7 +57,7 @@ export class GPQADiamondAdapter extends BaseAdapter {
       const res = await fetch(API_URL, {
         headers: {
           "User-Agent": "Mozilla/5.0",
-          Authorization: `Bearer ${apiKey}`,
+          "x-api-key": apiKey,
           Accept: "application/json",
         },
         cache: "no-store",
@@ -65,15 +65,15 @@ export class GPQADiamondAdapter extends BaseAdapter {
 
       if (!res.ok) throw new Error("AA API failed: " + String(res.status));
 
-      const data = (await res.json()) as AAModel[] | { data: AAModel[] };
-      const models = Array.isArray(data) ? data : (data.data ?? []);
+      const json = (await res.json()) as { data?: AAModel[] } | AAModel[];
+      const models = Array.isArray(json) ? json : (json.data ?? []);
 
       const withScore = models
         .filter((m) => m.evaluations?.gpqa != null)
         .map((m) => ({
           name: m.name ?? "Unknown",
-          provider: m.provider,
-          score: m.evaluations!.gpqa!,
+          provider: m.model_creator?.name,
+          score: Number((m.evaluations!.gpqa! * 100).toFixed(1)),
         }))
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);

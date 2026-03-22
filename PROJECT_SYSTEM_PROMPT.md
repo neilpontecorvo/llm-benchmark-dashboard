@@ -19,20 +19,20 @@ The application is a Next.js 15 + TypeScript + Tailwind + Prisma + SQLite dashbo
 ## Benchmark set
 
 ### Included in overall ranking
-- Artificial Analysis Intelligence Index — 15%
-- LM Arena Text — 12%
-- LiveBench — 10%
-- SWE-bench Verified — 10%
-- GPQA Diamond — 10%
-- Humanity's Last Exam — 10%
-- Arena Text to Image — 8%
-- Arena Text to Video — 8%
-- Arena Image to Video — 7%
-- Aider Polyglot — 5%
-- MMMLU — 5%
+- Artificial Analysis Intelligence Index — 20%
+- LM Arena Text — 15%
+- LiveBench — 13%
+- SWE-bench Verified — 13%
+- GPQA Diamond — 13%
+- Humanity's Last Exam — 13%
+- Aider Polyglot — 7%
+- MMMLU — 6%
 
-### Excluded from overall ranking
-- Hugging Face Open LLM — 0% weight, tracked for visibility only
+### Excluded from overall ranking (weight = 0)
+- Arena Text to Image — visual benchmark, displayed but excluded
+- Arena Text to Video — visual benchmark, displayed but excluded
+- Arena Image to Video — visual benchmark, displayed but excluded
+- Hugging Face Open LLM — retired, tracked for visibility only
 
 ## Data policy
 

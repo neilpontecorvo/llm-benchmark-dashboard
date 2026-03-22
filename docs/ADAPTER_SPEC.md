@@ -47,52 +47,56 @@ Adapters operate in one of three modes:
 
 | Adapter | Key | Category | Source | Data Mode | Weight |
 |---|---|---|---|---|---|
-| Artificial Analysis | `artificial_analysis` | general | Official API (v2) + seed fallback | Live (needs API key) | 15% |
-| LM Arena Text | `arena_text` | community_preference | LMArena catalog JSON + seed fallback | Live | 12% |
-| LiveBench | `livebench` | general | Seed (JS SPA, official repo exists) | Seed | 10% |
+| Artificial Analysis | `artificial_analysis` | general | Official API (v2) + seed fallback | Live (needs API key) | 20% |
+| LM Arena Text | `arena_text` | community_preference | LMArena catalog JSON + seed fallback | Live | 15% |
+| LiveBench | `livebench` | general | Seed (JS SPA, official repo exists) | Seed | 13% |
 | HF Open LLM | `hf_open_llm` | open_only | HF datasets-server API | Live (⚠️ retired 2025-03-13) | 0% |
 
 ### Coding
 
 | Adapter | Key | Category | Source | Data Mode | Weight |
 |---|---|---|---|---|---|
-| SWE-bench Verified | `swe_bench_verified` | coding | GitHub JSON | Live | 10% |
-| Aider Polyglot | `aider_polyglot` | coding | GitHub YAML | Live | 5% |
+| SWE-bench Verified | `swe_bench_verified` | coding | GitHub JSON | Live | 13% |
+| Aider Polyglot | `aider_polyglot` | coding | GitHub YAML | Live | 7% |
 
-### Multimodal (Arena)
+### Visual Generation (excluded from overall ranking)
 
 | Adapter | Key | Category | Source | Data Mode | Weight |
 |---|---|---|---|---|---|
-| Arena Text to Image | `arena_text_to_image` | text_to_image | LMArena catalog JSON + seed fallback | Live | 8% |
-| Arena Text to Video | `arena_text_to_video` | text_to_video | Seed (real ELO, no public JSON) | Seed | 8% |
-| Arena Image to Video | `arena_image_to_video` | image_to_video | Seed (real ELO, no public JSON) | Seed | 7% |
+| Arena Text to Image | `arena_text_to_image` | text_to_image | LMArena catalog JSON + seed fallback | Live | 0% |
+| Arena Text to Video | `arena_text_to_video` | text_to_video | AA API v2 media endpoint + seed fallback | Live (needs API key) | 0% |
+| Arena Image to Video | `arena_image_to_video` | image_to_video | AA API v2 media endpoint + seed fallback | Live (needs API key) | 0% |
 
 ### Reasoning & Knowledge
 
 | Adapter | Key | Category | Source | Data Mode | Weight |
 |---|---|---|---|---|---|
-| GPQA Diamond | `gpqa_diamond` | reasoning | AA API (evaluations.gpqa) + seed fallback | Live (needs API key) | 10% |
-| Humanity's Last Exam | `humanitys_last_exam` | general | Scale Labs leaderboard + seed fallback | Live (HTML parse) | 10% |
-| MMMLU | `mmmlu` | multilingual | Seed (no strong public endpoint) | Seed | 5% |
+| GPQA Diamond | `gpqa_diamond` | reasoning | AA API v2 (`evaluations.gpqa`) + seed fallback | Live (needs API key) | 13% |
+| Humanity's Last Exam | `humanitys_last_exam` | general | AA API v2 (`evaluations.hle`) → Scale Labs HTML → seed | Live (API primary, HTML fallback) | 13% |
+| MMMLU | `mmmlu` | multilingual | AA API v2 (`evaluations.mmlu_pro`) + seed fallback | Live (needs API key) | 6% |
 
 ## Live data sources
 
-| Adapter | Endpoint | Format |
-|---|---|---|
-| Artificial Analysis | `artificialanalysis.ai/api/v2/data/llms/models` | JSON API (auth required) |
-| Arena Text | `raw.githubusercontent.com/lmarena/arena-catalog/main/data/leaderboard-text.json` | JSON |
-| Arena Text to Image | `raw.githubusercontent.com/lmarena/arena-catalog/main/data/leaderboard-image.json` | JSON |
-| GPQA Diamond | `artificialanalysis.ai/api/v2/data/llms/models` (evaluations.gpqa) | JSON API (auth required) |
-| Humanity's Last Exam | `labs.scale.com/leaderboard/humanitys_last_exam` | HTML parse |
-| SWE-bench | `raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json` | JSON |
-| Aider | `raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml` | YAML |
-| HF Open LLM | `datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard/contents` | JSON API |
+| Adapter | Endpoint | Format | Auth |
+|---|---|---|---|
+| Artificial Analysis | `artificialanalysis.ai/api/v2/data/llms/models` | JSON API | `x-api-key` |
+| Arena Text | `raw.githubusercontent.com/lmarena/arena-catalog/main/data/leaderboard-text.json` | JSON | None |
+| Arena Text to Image | `raw.githubusercontent.com/lmarena/arena-catalog/main/data/leaderboard-image.json` | JSON | None |
+| Arena Text to Video | `artificialanalysis.ai/api/v2/data/media/text-to-video` | JSON API | `x-api-key` |
+| Arena Image to Video | `artificialanalysis.ai/api/v2/data/media/image-to-video` | JSON API | `x-api-key` |
+| GPQA Diamond | `artificialanalysis.ai/api/v2/data/llms/models` (`evaluations.gpqa`) | JSON API | `x-api-key` |
+| Humanity's Last Exam | `artificialanalysis.ai/api/v2/data/llms/models` (`evaluations.hle`) | JSON API | `x-api-key` |
+| Humanity's Last Exam (fallback) | `labs.scale.com/leaderboard/humanitys_last_exam` | HTML parse | None |
+| MMMLU | `artificialanalysis.ai/api/v2/data/llms/models` (`evaluations.mmlu_pro`) | JSON API | `x-api-key` |
+| SWE-bench | `raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json` | JSON | None |
+| Aider | `raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml` | YAML | None |
+| HF Open LLM | `datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard/contents` | JSON API | None |
 
 ## API keys
 
-| Key | Used by | Notes |
-|---|---|---|
-| `ARTIFICIAL_ANALYSIS_API_KEY` | Artificial Analysis, GPQA Diamond | Falls back to seed without key |
+| Key | Used by | Auth Header | Notes |
+|---|---|---|---|
+| `ARTIFICIAL_ANALYSIS_API_KEY` | AA, GPQA, HLE, MMMLU, Arena T2V, Arena I2V | `x-api-key` | Free tier: 1,000 req/day. Falls back to seed without key |
 
 ## Adapter responsibilities
 1. Fetch the most current accessible source data.

@@ -1,18 +1,18 @@
 # Game Plan — Road to Production
 
-## Current Completion: ~91%
+## Current Completion: ~95%
 
 ### Breakdown by area
 
 | Area | Status | Weight | Score |
 |---|---|---|---|
 | Core architecture (types, DB, adapters) | Complete | 20% | 20/20 |
-| 12 benchmark adapters | 7 live-capable, 3 seed, 1 mock, 1 retired | 15% | 15/15 |
+| 12 benchmark adapters | 10 live-capable, 1 seed, 1 retired | 15% | 15/15 |
 | Refresh pipeline | Complete (per-adapter error isolation) | 10% | 10/10 |
 | Scoring & normalization | Complete (0-100 weighted) | 10% | 10/10 |
 | UI dashboard | Complete (theme system, heat bars, strengths, descriptions) | 15% | 15/15 |
 | Export (PDF/PNG) | Complete (print CSS, viewport tuned) | 8% | 8/8 |
-| Testing | 173 tests passing (5 suites) | 12% | 10/12 |
+| Testing | 174 tests passing (5 suites) | 12% | 10/12 |
 | Deployment readiness | Not started | 5% | 0/5 |
 | Code hygiene | Clean (dead deps removed, env validation) | 5% | 5/5 |
 | **Total** | | **100%** | **93/100** |
@@ -20,11 +20,14 @@
 ### What's working right now
 - `npm run dev` boots clean with env validation on startup
 - `npm run build` passes
-- `npm test` runs 173 tests across 5 suites — all passing
+- `npm test` runs 174 tests across 5 suites — all passing
 - `npx tsc --noEmit` passes zero errors
-- 7 adapters live-capable (Arena Text, Arena T2I, AA, GPQA, HLE, SWE-bench, Aider, HF)
-- 3 adapters seed-only (Arena T2V, Arena I2V, MMMLU)
+- 10 adapters live-capable (AA, Arena Text, Arena T2I, Arena T2V, Arena I2V, GPQA, HLE, MMMLU, SWE-bench, Aider, HF)
+- 1 adapter seed-only (LiveBench — HuggingFace planned)
 - 1 adapter retired/archival (HF Open LLM)
+- AA API key unlocks 6 adapters (AA, GPQA, HLE, MMMLU, T2V, I2V) via `x-api-key` header
+- Visual benchmarks (T2I, T2V, I2V) excluded from overall ranking (weight 0)
+- Theme system with import/export, 3 presets, and Theme Architect companion app
 - Refresh pipeline runs 12/12 with per-adapter error isolation
 - Dashboard renders with live/mock badges, score bars, category pills
 - PDF and PNG export routes produce files via Playwright (print CSS added)
@@ -83,8 +86,7 @@
 - [ ] Document deployment steps
 
 ### Future Enhancements (Post-Launch)
-- LiveBench live ingestion via official repo/HF script pipeline
-- Arena Text-to-Video / Image-to-Video live JSON (when public endpoints available)
+- LiveBench live ingestion via HuggingFace datasets API (no auth needed)
 - Historical score tracking and trend visualization
 - Model comparison view
 
@@ -92,4 +94,4 @@
 
 ## Next Action
 
-Sprint 3 (resilience) and Sprint 4 (deployment) remain. The app is functionally complete with 7 live-capable adapters, a comprehensive test suite, and clean builds. Deployment config is the main gap to production.
+Sprint 3 (resilience) and Sprint 4 (deployment) remain. The app is functionally complete with 10 live-capable adapters, a comprehensive test suite, and clean builds. Deployment config is the main gap to production.

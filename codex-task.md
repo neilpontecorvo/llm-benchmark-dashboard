@@ -6,7 +6,7 @@ The core dashboard is functional with 12 benchmark adapters, a working refresh p
 
 ### What is built
 - Next.js 15 + TypeScript + Tailwind + Prisma + SQLite
-- 12 benchmark adapters (3 live, 8 seed, 1 mock)
+- 12 benchmark adapters (10 live-capable, 1 seed, 1 retired)
 - Selective live/mock rollout via per-adapter env flags
 - `dataSource` tracking through adapter → DB → UI
 - Dashboard with live/mock badges, category pills, weight indicators, score bars
@@ -19,18 +19,18 @@ The core dashboard is functional with 12 benchmark adapters, a working refresh p
 
 | # | Benchmark | Category | Source | Data Mode | Weight |
 |---|---|---|---|---|---|
-| 1 | Artificial Analysis Intelligence Index | General | artificialanalysis.ai | Mock | 15% |
-| 2 | LM Arena Text | Community Preference | arena.ai | Seed (real ELO) | 12% |
-| 3 | SWE-bench Verified | Coding | GitHub JSON | Live | 10% |
-| 4 | Aider Polyglot | Coding | GitHub YAML | Live | 5% |
-| 5 | LiveBench | General | livebench.ai | Seed | 10% |
-| 6 | HF Open LLM | Open-Only | HF datasets-server API | Live | 0% (excluded) |
-| 7 | Arena Text to Image | Text to Image | arena.ai | Seed (real ELO) | 8% |
-| 8 | Arena Text to Video | Text to Video | arena.ai | Seed (real ELO) | 8% |
-| 9 | Arena Image to Video | Image to Video | arena.ai | Seed (real ELO) | 7% |
-| 10 | GPQA Diamond | Reasoning | vellum.ai | Seed (top 5) | 10% |
-| 11 | Humanity's Last Exam | General | vellum.ai | Seed (top 5) | 10% |
-| 12 | MMMLU | Multilingual | vellum.ai | Seed (top 5) | 5% |
+| 1 | Artificial Analysis Intelligence Index | General | artificialanalysis.ai | Live (needs API key) / Seed | 20% |
+| 2 | LM Arena Text | Community Preference | LMArena catalog JSON | Live | 15% |
+| 3 | SWE-bench Verified | Coding | GitHub JSON | Live | 13% |
+| 4 | LiveBench | General | livebench.ai | Seed | 13% |
+| 5 | GPQA Diamond | Reasoning | AA API v2 | Live (needs API key) / Seed | 13% |
+| 6 | Humanity's Last Exam | General | Scale Labs | Live (HTML parse) / Seed | 13% |
+| 7 | Aider Polyglot | Coding | GitHub YAML | Live | 7% |
+| 8 | MMMLU | Multilingual | Seed | Seed | 6% |
+| 9 | Arena Text to Image | Text to Image | LMArena catalog JSON | Live | 0% (visual, excluded) |
+| 10 | Arena Text to Video | Text to Video | Seed | Seed | 0% (visual, excluded) |
+| 11 | Arena Image to Video | Image to Video | Seed | Seed | 0% (visual, excluded) |
+| 12 | HF Open LLM | Open-Only | HF datasets-server API | Live (retired) | 0% (excluded) |
 
 ## Remaining work — priority order
 

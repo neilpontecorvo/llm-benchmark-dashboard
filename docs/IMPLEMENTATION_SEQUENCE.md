@@ -32,11 +32,11 @@ This file documents the implementation phases, their current status, and remaini
 | 5 | HF Open LLM | HF datasets-server rows API | Live (⚠️ retired) |
 | 6 | LiveBench | Seed (official repo exists for scripted ingestion) | Seed |
 | 7 | Arena Text to Image | LMArena catalog JSON + seed fallback | Live |
-| 8 | Arena Text to Video | Seed (real ELO, no public JSON) | Seed |
-| 9 | Arena Image to Video | Seed (real ELO, no public JSON) | Seed |
-| 10 | GPQA Diamond | AA API v2 (evaluations.gpqa) + seed fallback | Live (needs API key) |
-| 11 | Humanity's Last Exam | Scale Labs leaderboard + seed fallback | Live (HTML parse) |
-| 12 | MMMLU | Seed (no strong official endpoint) | Seed |
+| 8 | Arena Text to Video | AA API v2 media endpoint + seed fallback | Live (needs API key) |
+| 9 | Arena Image to Video | AA API v2 media endpoint + seed fallback | Live (needs API key) |
+| 10 | GPQA Diamond | AA API v2 (`evaluations.gpqa`) + seed fallback | Live (needs API key) |
+| 11 | Humanity's Last Exam | AA API v2 (`evaluations.hle`) → Scale Labs HTML → seed | Live (API primary) |
+| 12 | MMMLU | AA API v2 (`evaluations.mmlu_pro`) + seed fallback | Live (needs API key) |
 
 ### Data source notes (updated 2026-03-21)
 - **SWE-bench**: Best source — structured JSON, 180 entries, org extraction from tags.
@@ -44,12 +44,13 @@ This file documents the implementation phases, their current status, and remaini
 - **HF Open LLM**: datasets-server rows API — 4,500+ models. ⚠️ Officially retired 2025-03-13. Kept for archival.
 - **Arena Text**: Now uses official LMArena catalog JSON. Averages across sub-categories (chinese, coding, creative_writing).
 - **Arena Text-to-Image**: Now uses official LMArena catalog JSON ("full" category). 32 models.
-- **Arena Text-to-Video / Image-to-Video**: No public JSON found. Seed data retained.
-- **Artificial Analysis**: Official API v2 now available. Requires `ARTIFICIAL_ANALYSIS_API_KEY`.
-- **GPQA Diamond**: Moved from Vellum top-5 to AA API `evaluations.gpqa`. Requires same API key as AA.
-- **Humanity's Last Exam**: Moved from Vellum top-5 to Scale Labs official leaderboard. 43 models. HTML parse with seed fallback.
-- **MMMLU**: Still seed-only. No strong official public endpoint found.
-- **LiveBench**: Official repo exists with scripted ingestion via HF datasets. Future upgrade path identified.
+- **Arena Text-to-Video**: Now live via AA API v2 `/data/media/text-to-video` (77 models, ELO + CI95).
+- **Arena Image-to-Video**: Now live via AA API v2 `/data/media/image-to-video` (ELO + CI95).
+- **Artificial Analysis**: Official API v2 with `x-api-key` header. 442 models with intelligence index. Free tier: 1,000 req/day.
+- **GPQA Diamond**: Now live via AA API v2 `evaluations.gpqa` field. 420 models. Scores are decimals (0-1) converted to percentages.
+- **Humanity's Last Exam**: Now live via AA API v2 `evaluations.hle` (416 models). Falls back to Scale Labs HTML scraping, then seed.
+- **MMMLU**: Now live via AA API v2 `evaluations.mmlu_pro` field. 344 models. Scores are decimals (0-1) converted to percentages.
+- **LiveBench**: Still seed-only. HuggingFace datasets API available for future integration (no auth needed).
 
 ## Phase 3 — Refresh pipeline [COMPLETE]
 1. ~~Add per-adapter execution wrapper.~~
@@ -89,9 +90,9 @@ This file documents the implementation phases, their current status, and remaini
 6. ~~Export filename includes ISO timestamp (already working).~~
 
 ## Phase 7 — Testing [COMPLETE]
-173 tests passing across 5 suites:
+174 tests passing across 5 suites:
 - [x] Normalization tests (7 tests)
-- [x] Overall ranking tests (7 tests)
+- [x] Overall ranking tests (8 tests)
 - [x] Weights validation tests (8 tests)
 - [x] Contract tests for all 12 adapters (139 tests)
 - [x] Environment validation tests (4 tests)

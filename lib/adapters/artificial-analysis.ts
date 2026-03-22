@@ -29,11 +29,12 @@ const SEED_DATA = [
 
 interface AAModel {
   name?: string;
-  provider?: string;
+  model_creator?: { name?: string };
   evaluations?: {
     artificial_analysis_intelligence_index?: number;
     gpqa?: number;
     hle?: number;
+    mmlu_pro?: number;
   };
 }
 
@@ -60,7 +61,7 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
       const res = await fetch(API_URL, {
         headers: {
           "User-Agent": "Mozilla/5.0",
-          Authorization: `Bearer ${apiKey}`,
+          "x-api-key": apiKey,
           Accept: "application/json",
         },
         cache: "no-store",
@@ -68,16 +69,14 @@ export class ArtificialAnalysisAdapter extends BaseAdapter {
 
       if (!res.ok) throw new Error("AA API failed: " + String(res.status));
 
-      const data = (await res.json()) as AAModel[] | { data: AAModel[] };
-
-      // API may return array directly or wrapped in { data: [...] }
-      const models = Array.isArray(data) ? data : (data.data ?? []);
+      const json = (await res.json()) as { data?: AAModel[] } | AAModel[];
+      const models = Array.isArray(json) ? json : (json.data ?? []);
 
       const withScore = models
         .filter((m) => m.evaluations?.artificial_analysis_intelligence_index != null)
         .map((m) => ({
           name: m.name ?? "Unknown",
-          provider: m.provider,
+          provider: m.model_creator?.name,
           score: m.evaluations!.artificial_analysis_intelligence_index!,
         }))
         .sort((a, b) => b.score - a.score)

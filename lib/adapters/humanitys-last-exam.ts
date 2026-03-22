@@ -4,20 +4,28 @@ import type { BenchmarkResult } from "@/lib/types";
 /**
  * Humanity's Last Exam — expert-level multidomain benchmark.
  *
- * Live source: Scale Labs official leaderboard (HTML parse).
- * The page renders server-side with embedded data. We parse the ranked
- * table from HTML. Scores are percentages (0-100).
+ * Live sources (tried in order):
+ * 1. Artificial Analysis API v2 — evaluations.hle field (structured JSON, reliable)
+ * 2. Scale Labs official leaderboard — HTML parse (fragile, fallback)
+ * 3. Seed data — hardcoded scores (last resort)
  *
- * Seed data updated from Scale Labs (replaces old Vellum top-5).
- * Seed retained as fallback if scraping fails.
+ * HLE scores are percentages (0-100). AA API returns decimals (0-1) which are
+ * converted to percentages for consistency.
  */
 
+const AA_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const LIVE_URL = "https://labs.scale.com/leaderboard/humanitys_last_exam";
 
+interface AAModel {
+  name?: string;
+  model_creator?: { name?: string };
+  evaluations?: { hle?: number };
+}
+
 const SEED_DATA = [
-  { model: "Gemini 3 Pro Preview", provider: "Google DeepMind", score: 37.52, ci: 1.90 },
-  { model: "GPT-5.4 (xHigh Thinking)", provider: "OpenAI", score: 36.24, ci: 1.88 },
-  { model: "Claude Opus 4.6 Thinking Max", provider: "Anthropic", score: 34.44, ci: 1.86 },
+  { model: "Gemini 3 Pro", provider: "Google DeepMind", score: 37.52, ci: 1.90 },
+  { model: "GPT-5.4 High", provider: "OpenAI", score: 36.24, ci: 1.88 },
+  { model: "Claude Opus 4.6 Thinking", provider: "Anthropic", score: 34.44, ci: 1.86 },
   { model: "GPT-5 Pro", provider: "OpenAI", score: 31.64, ci: 1.82 },
   { model: "GPT-5.2", provider: "OpenAI", score: 27.80, ci: 1.75 },
   { model: "GPT-5", provider: "OpenAI", score: 25.32, ci: 1.70 },
@@ -39,12 +47,57 @@ export class HumanitysLastExamAdapter extends BaseAdapter {
   }
 
   protected async fetchLive(limit: number): Promise<BenchmarkResult[]> {
+    // Try AA API first (structured, reliable)
+    const apiKey = process.env.ARTIFICIAL_ANALYSIS_API_KEY;
+    if (apiKey) {
+      try {
+        const res = await fetch(AA_API_URL, {
+          headers: { "User-Agent": "Mozilla/5.0", "x-api-key": apiKey, Accept: "application/json" },
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const json = (await res.json()) as { data?: AAModel[] } | AAModel[];
+          const models = Array.isArray(json) ? json : (json.data ?? []);
+          const withHle = models
+            .filter((m) => m.evaluations?.hle != null && m.evaluations.hle > 0)
+            .map((m) => ({
+              name: m.name ?? "Unknown",
+              provider: m.model_creator?.name,
+              score: Number((m.evaluations!.hle! * 100).toFixed(2)),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
+
+          if (withHle.length >= 5) {
+            const fetchedAt = new Date().toISOString();
+            return this.normalizeLiveRows(
+              withHle.map((row, idx) => ({
+                id: `${this.key}:${row.name}:${idx + 1}`,
+                benchmarkKey: this.key,
+                fetchedAt,
+                modelName: row.name,
+                provider: row.provider,
+                rank: idx + 1,
+                rawScore: row.score,
+                rawScoreText: `${row.score}%`,
+                normalizedScore: null as number | null,
+                confidenceText: null as string | null,
+                category: "general" as const,
+                sourceUrl: this.sourceUrl,
+                includedInOverall: this.includedInOverall,
+              }))
+            );
+          }
+        }
+      } catch {
+        // AA API failed — try Scale Labs
+      }
+    }
+
+    // Fallback: Scale Labs HTML scraping
     try {
       const res = await fetch(LIVE_URL, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-          Accept: "text/html",
-        },
+        headers: { "User-Agent": "Mozilla/5.0", Accept: "text/html" },
         cache: "no-store",
       });
 

@@ -8,10 +8,10 @@ You are continuing implementation of the `llm-benchmark-dashboard` repository.
 
 ## Current state
 
-The dashboard is functional with 12 benchmark adapters (7 live-capable), a working refresh pipeline, comprehensive UI with theme system, PDF/PNG export with full feature parity, and 173 passing tests. The core architecture is complete — remaining work is resilience hardening and deployment.
+The dashboard is functional with 12 benchmark adapters (10 live-capable via AA API), a working refresh pipeline, comprehensive UI with theme system, PDF/PNG export with full feature parity, and 174 passing tests. The core architecture is complete — remaining work is resilience hardening and deployment.
 
 ### What is built
-- 12 benchmark adapters (7 live-capable, 3 seed, 1 mock, 1 retired)
+- 12 benchmark adapters (10 live-capable, 1 seed, 1 retired)
 - Refresh pipeline with per-adapter error handling and partial success
 - Prisma + SQLite with `dataSource` tracking
 - Dashboard UI with category badges, live/mock indicators, weight labels, heat-gradient score bars, strength tags, benchmark descriptions
@@ -21,7 +21,7 @@ The dashboard is functional with 12 benchmark adapters (7 live-capable), a worki
 - PDF and PNG export routes via Playwright with full feature parity
 - Selective live/mock rollout via per-adapter env flags
 - Environment validation via Next.js instrumentation hook
-- 173 tests across 5 suites (normalization, ranking, weights, adapter contracts, env validation)
+- 174 tests across 5 suites (normalization, ranking, weights, adapter contracts, env validation)
 
 ### What still needs work
 - Retry/backoff for live fetches
@@ -42,20 +42,20 @@ The dashboard is functional with 12 benchmark adapters (7 live-capable), a worki
 ## Benchmark set (12 benchmarks)
 
 ### Included in overall ranking (weight > 0)
-- Artificial Analysis (15%) — general — AA API v2 + seed fallback
-- Arena Text (12%) — community preference — LMArena catalog JSON + seed fallback
-- LiveBench (10%) — general — seed only
-- SWE-bench Verified (10%) — coding — live GitHub JSON
-- GPQA Diamond (10%) — reasoning — AA API v2 + seed fallback
-- Humanity's Last Exam (10%) — reasoning — Scale Labs HTML parse + seed fallback
-- Arena Text to Image (8%) — text to image — LMArena catalog JSON + seed fallback
-- Arena Text to Video (8%) — text to video — seed only
-- Arena Image to Video (7%) — image to video — seed only
-- Aider Polyglot (5%) — coding — live GitHub YAML
-- MMMLU (5%) — multilingual — seed only
+- Artificial Analysis (20%) — general — AA API v2 (`x-api-key`) + seed fallback
+- Arena Text (15%) — community preference — LMArena catalog JSON + seed fallback
+- LiveBench (13%) — general — seed only (HuggingFace planned)
+- SWE-bench Verified (13%) — coding — live GitHub JSON
+- GPQA Diamond (13%) — reasoning — AA API v2 `evaluations.gpqa` + seed fallback
+- Humanity's Last Exam (13%) — reasoning — AA API v2 `evaluations.hle` → Scale Labs HTML → seed
+- Aider Polyglot (7%) — coding — live GitHub YAML
+- MMMLU (6%) — multilingual — AA API v2 `evaluations.mmlu_pro` + seed fallback
 
-### Excluded from overall ranking
-- Hugging Face Open LLM (0%) — open-only cohort — live but retired 2025-03-13
+### Excluded from overall ranking (weight = 0)
+- Arena Text to Image — text to image — LMArena catalog JSON + seed fallback (visual, excluded)
+- Arena Text to Video — text to video — AA API v2 media endpoint + seed fallback (visual, excluded)
+- Arena Image to Video — image to video — AA API v2 media endpoint + seed fallback (visual, excluded)
+- Hugging Face Open LLM — open-only cohort — live but retired 2025-03-13
 
 ## Priority order for remaining work
 1. Add retry/backoff wrapper for live fetch failures.

@@ -138,7 +138,11 @@ export class HumanitysLastExamAdapter extends BaseAdapter {
 
       // Filter: HLE scores are typically 0-50 range, skip noise
       if (score > 80 || score < 1) continue;
-      if (name.length < 3) continue;
+      if (name.length < 4) continue;
+
+      // Skip common UI labels that the regex can pick up from HTML
+      const lower = name.toLowerCase();
+      if (["new", "old", "top", "rank", "score", "model", "date", "best", "test"].includes(lower)) continue;
 
       const key = name.toLowerCase();
       if (seen.has(key)) continue;

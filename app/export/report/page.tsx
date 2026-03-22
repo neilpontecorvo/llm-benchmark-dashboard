@@ -41,6 +41,22 @@ const CAT_COLORS: Record<BenchmarkCategory, { bg: string; text: string }> = {
   multilingual:         { bg: "#ccfbf1", text: "#0f766e" },
 };
 
+/** Model card URLs keyed by substring match (case-insensitive) */
+const MODEL_CARD_URLS: { match: string; url: string; label: string }[] = [
+  { match: "gemini 3", url: "https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-1-Pro-Model-Card.pdf", label: "Model Card" },
+  { match: "claude opus 4.6", url: "https://www-cdn.anthropic.com/0dd865075ad3132672ee0ab40b05a53f14cf5288.pdf", label: "Model Card" },
+  { match: "gpt-5.4", url: "https://openai.com/index/gpt-5-4-thinking-system-card/", label: "System Card" },
+  { match: "kimi k2", url: "https://build.nvidia.com/moonshotai/kimi-k2-instruct/modelcard", label: "Model Card" },
+];
+
+function getModelCardUrl(modelName: string): { url: string; label: string } | null {
+  const lower = modelName.toLowerCase();
+  for (const entry of MODEL_CARD_URLS) {
+    if (lower.includes(entry.match)) return { url: entry.url, label: entry.label };
+  }
+  return null;
+}
+
 const RANK_COLORS = [
   { bg: "#fffbeb", text: "#b45309", border: "#fcd34d" }, // gold
   { bg: "#f8fafc", text: "#475569", border: "#cbd5e1" }, // silver
@@ -92,6 +108,20 @@ export default async function ExportReportPage() {
                   <div style={{ fontSize: 10, color: "#64748b" }}>
                     {item.appearanceCount} benchmark{item.appearanceCount !== 1 ? "s" : ""}
                   </div>
+                  {(() => {
+                    const card = getModelCardUrl(item.modelName);
+                    if (!card) return null;
+                    return (
+                      <a
+                        href={card.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: "inline-block", marginTop: 4, fontSize: 9, fontWeight: 600, color: "#2563eb", textDecoration: "none" }}
+                      >
+                        {card.label} ↗
+                      </a>
+                    );
+                  })()}
                 </div>
 
                 {/* Strength tags — stacked below */}

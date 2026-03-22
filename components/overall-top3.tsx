@@ -31,6 +31,22 @@ const CATEGORY_STYLES: Record<BenchmarkCategory, ThemeStyle> = {
   multilingual:         { bg: "var(--cat-multilingual-bg)",   text: "var(--cat-multilingual-text)",   border: "var(--cat-multilingual-border)" },
 };
 
+/** Model card URLs keyed by substring match against modelName (case-insensitive) */
+const MODEL_CARD_URLS: { match: string; url: string; label: string }[] = [
+  { match: "gemini 3", url: "https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-1-Pro-Model-Card.pdf", label: "Model Card" },
+  { match: "claude opus 4.6", url: "https://www-cdn.anthropic.com/0dd865075ad3132672ee0ab40b05a53f14cf5288.pdf", label: "Model Card" },
+  { match: "gpt-5.4", url: "https://openai.com/index/gpt-5-4-thinking-system-card/", label: "System Card" },
+  { match: "kimi k2", url: "https://build.nvidia.com/moonshotai/kimi-k2-instruct/modelcard", label: "Model Card" },
+];
+
+function getModelCardUrl(modelName: string): { url: string; label: string } | null {
+  const lower = modelName.toLowerCase();
+  for (const entry of MODEL_CARD_URLS) {
+    if (lower.includes(entry.match)) return { url: entry.url, label: entry.label };
+  }
+  return null;
+}
+
 const RANK_STYLES: ThemeStyle[] = [
   { bg: "var(--rank1-bg)", text: "var(--rank1-text)", border: "var(--rank1-border)" },
   { bg: "var(--rank2-bg)", text: "var(--rank2-text)", border: "var(--rank2-border)" },
@@ -72,6 +88,22 @@ export function OverallTop3({ data }: { data: OverallResult[] }) {
                   <div className="text-xs" style={{ color: "var(--page-text-muted)" }}>
                     {item.appearanceCount} benchmark{item.appearanceCount !== 1 ? "s" : ""}
                   </div>
+                  {(() => {
+                    const card = getModelCardUrl(item.modelName);
+                    if (!card) return null;
+                    return (
+                      <a
+                        href={card.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium hover:underline"
+                        style={{ color: "var(--btn-primary-bg)" }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        {card.label}
+                      </a>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex flex-col items-end gap-1.5 pt-5 shrink-0 max-w-[45%]">
